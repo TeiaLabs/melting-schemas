@@ -1,4 +1,3 @@
-typer[all]
-aiprompts
+AIPrompts
 redb-odm
 pydantic
