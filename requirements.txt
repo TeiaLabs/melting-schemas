@@ -1,0 +1,4 @@
+typer[all]
+aiprompts
+redb-odm
+pydantic
