@@ -49,9 +49,9 @@ setuptools.setup(
     description="Teia Melting Face API Schemas",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/TeiaLabs/melting-face/schemas",
+    url="https://github.com/TeiaLabs/melting-schemas",
     packages=setuptools.find_packages(),
-    python_requires=">=3.10",
+    python_requires=">=3.11",
     install_requires=requirements,
     extras_require=requirements_extras,
 )
