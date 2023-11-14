@@ -82,7 +82,7 @@ class RawChatCompletionRequest(BaseModel):
                         {"content": "You are a helpful chatbot.", "role": "system"},
                         {"content": "What does bequeath mean?", "role": "user"},
                     ],
-                    "settings": {"model": "gpt-3.5-turbo"},
+                    "settings": {"model": "openai/gpt-3.5-turbo-1106"},
                 }
             },
             "Named raw": {
@@ -95,7 +95,7 @@ class RawChatCompletionRequest(BaseModel):
                             "role": "user",
                         },
                     ],
-                    "settings": {"model": "gpt-4"},
+                    "settings": {"model": "openai/gpt-4-0613"},
                 },
             },
         }

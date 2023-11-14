@@ -21,7 +21,7 @@ class FCallModelSettings(TypedDict, total=False):
     top_p: float  # ValueRange(0, 1)
     frequency_penalty: float  # ValueRange(-2, 2) defaults to 0
     presence_penalty: float  # ValueRange(-2, 2) defaults to 0
-    logit_bias: dict[int, int]  # valmap(ValueRange(-100, 100))
+    logit_bias: dict[str, int]  # valmap(ValueRange(-100, 100))
     stop: list[str]  # MaxLen(4)
 
 

@@ -1,4 +1,4 @@
-from typing import TypedDict
+from typing import TypedDict, Required
 
 
 class TextModelSettings(TypedDict, total=False):
@@ -8,9 +8,10 @@ class TextModelSettings(TypedDict, total=False):
     Heavily inspired by https://platform.openai.com/docs/api-reference/completions/create
     """
 
+    model: Required[str]
     max_tokens: int  # defaults to inf
     temperature: float  # ValueRange(0, 2)
     top_p: float  # ValueRange(0, 1)
-    logit_bias: dict[int, int]  # valmap(ValueRange(-100, 100))
+    logit_bias: dict[str, int]  # valmap(ValueRange(-100, 100))
     stop: list[str]  # MaxLen(4)
     n: int  # defaults to 1
