@@ -164,7 +164,7 @@ class FCallCompletionCreationResponse(BaseModel):
 
 
 class PluginStreamedResponse(BaseModel):
-    op_type: Literal["step", "result", "start", "stop", "record_execution"]
+    op_type: Literal["step", "result", "start", "stop", "execution_id"]
     plugin_name: Optional[str] = None
     method: Optional[str] = None
     content: str
