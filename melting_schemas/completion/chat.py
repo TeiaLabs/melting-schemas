@@ -20,6 +20,7 @@ class ChatModelSettings(TypedDict, total=False):
 
     Heavily inspired by https://platform.openai.com/docs/api-reference/chat/create
     """
+
     model: Required[str]
     max_tokens: int  # defaults to inf
     temperature: float  # ValueRange(0, 2)
@@ -154,5 +155,36 @@ class HybridChatCompletionRequest(BaseModel):
                     ],
                     "prompt_name": "teia.example.1",
                 },
+            }
+        }
+
+
+class PluginCall(BaseModel):
+    plugin: str
+    method: str
+    arguments: Optional[dict] = Field(default_factory=dict)
+
+
+class CompletionRequestPluginSelection(BaseModel):
+    completion_request: ChatCompletionRequest | RawChatCompletionRequest | HybridChatCompletionRequest
+    allowed_plugins: Optional[list[str]] = None
+    fcall_model_settings: ChatModelSettings = ChatModelSettings(
+        model="gpt-3.5-turbo-0613",
+        temperature=0.1,
+    )
+
+    class Config:
+        examples = {
+            "Plugin selection": {
+                "value": {
+                    "completion_request": {
+                        "messages": [
+                            {"content": "You are a helpful chatbot.", "role": "system"},
+                            {"content": "What does bequeath mean?", "role": "user"},
+                        ],
+                        "settings": {"model": "gpt-3.5-turbo"},
+                    },
+                    "allowed_plugins": ["web_page_summarization"],
+                }
             }
         }
