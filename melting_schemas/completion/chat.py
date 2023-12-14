@@ -200,7 +200,6 @@ class PluginInfo(BaseModel):
 
 
 class PluginResponse(BaseModel):
-    selector_completion: str
     plugin_selection_id: str
     plugin_execution_id: str
     plugins_infos: Optional[list[PluginInfo] | None]
