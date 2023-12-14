@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Literal, NotRequired, Optional, Required, TypedDict
+from typing import Any, Literal, NotRequired, Optional, Required, TypedDict
 
 from pydantic import BaseModel, Field
 
@@ -190,17 +190,17 @@ class CompletionRequestPluginSelection(BaseModel):
         }
 
 
-class PluginInfo(BaseModel):
+class PluginExecutionInfo(BaseModel):
     name: str
     method: str
-    params: dict
-    response: str | dict
+    params: Optional[dict]
+    response: Any
     error: str
-    response_time: int
+    response_time: float
 
 
-class PluginResponse(BaseModel):
-    plugin_selection_id: str
+class PluginExecutionResponse(BaseModel):
     plugin_execution_id: str
-    plugins_infos: Optional[list[PluginInfo] | None]
+    plugin_selection_id: Optional[str]
+    plugin_infos: list[PluginExecutionInfo]
     error: str
