@@ -188,3 +188,20 @@ class CompletionRequestPluginSelection(BaseModel):
                 }
             }
         }
+
+
+class PluginInfo(BaseModel):
+    name: str
+    method: str
+    params: dict
+    response: str | dict
+    error: str
+    response_time: int
+
+
+class PluginResponse(BaseModel):
+    selector_completion: str
+    plugin_selection_id: str
+    plugin_execution_id: str
+    plugins_infos: Optional[list[PluginInfo] | None]
+    error: str
