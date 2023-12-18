@@ -15,6 +15,7 @@ class FCallModelSettings(TypedDict, total=False):
 
     Heavily inspired by https://platform.openai.com/docs/api-reference/chat/create
     """
+
     model: Required[str]
     max_tokens: int  # defaults to inf
     temperature: float  # ValueRange(0, 2)
@@ -160,3 +161,20 @@ class FCallCompletionCreationResponse(BaseModel):
 
     class Config:
         smart_unions = True
+
+
+class PluginStreamedResponse(BaseModel):
+    op_type: Literal["step", "result", "start", "stop", "execution_id"]
+    plugin_name: Optional[str] = None
+    method: Optional[str] = None
+    content: str
+
+
+class StartPluginStreamedResponse(PluginStreamedResponse):
+    params: dict
+    selection_id: Optional[str] = None
+
+
+class StopPluginStreamedResponse(PluginStreamedResponse):
+    response_time: str
+    error: str
