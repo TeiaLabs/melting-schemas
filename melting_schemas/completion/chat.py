@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Literal, NotRequired, Optional, Required, TypedDict
+from typing import Any, Literal, NotRequired, Optional, Required, TypedDict
 
 from pydantic import BaseModel, Field
 
@@ -20,6 +20,7 @@ class ChatModelSettings(TypedDict, total=False):
 
     Heavily inspired by https://platform.openai.com/docs/api-reference/chat/create
     """
+
     model: Required[str]
     max_tokens: int  # defaults to inf
     temperature: float  # ValueRange(0, 2)
@@ -156,3 +157,50 @@ class HybridChatCompletionRequest(BaseModel):
                 },
             }
         }
+
+
+class PluginCall(BaseModel):
+    plugin: str
+    method: str
+    arguments: Optional[dict] = Field(default_factory=dict)
+
+
+class CompletionRequestPluginSelection(BaseModel):
+    completion_request: ChatCompletionRequest | RawChatCompletionRequest | HybridChatCompletionRequest
+    allowed_plugins: Optional[list[str]] = None
+    fcall_model_settings: ChatModelSettings = ChatModelSettings(
+        model="gpt-3.5-turbo-0613",
+        temperature=0.1,
+    )
+
+    class Config:
+        examples = {
+            "Plugin selection": {
+                "value": {
+                    "completion_request": {
+                        "messages": [
+                            {"content": "You are a helpful chatbot.", "role": "system"},
+                            {"content": "What does bequeath mean?", "role": "user"},
+                        ],
+                        "settings": {"model": "gpt-3.5-turbo"},
+                    },
+                    "allowed_plugins": ["web_page_summarization"],
+                }
+            }
+        }
+
+
+class PluginExecutionInfo(BaseModel):
+    name: str
+    method: str
+    params: Optional[dict]
+    response: Any
+    error: str
+    response_time: float
+
+
+class PluginExecutionResponse(BaseModel):
+    plugin_execution_id: str
+    plugin_selection_id: Optional[str]
+    plugin_infos: list[PluginExecutionInfo]
+    error: str
