@@ -45,7 +45,6 @@ class ToolCall(TypedDict):
     arguments: str
 
 
-# this one might be different that what it is right now
 class ToolCallMLMessage(TypedDict):
     content: Optional[None]
     tool_call: list[ToolCall]
@@ -134,7 +133,7 @@ class TCallCompletionCreationResponse(BaseModel):
         | ToolCallMLMessage
         | ToolMLMessage
     ]
-    output: ChatMLMessage | FunctionCallMLMessage | FunctionMLMessage | ToolMLMessage | ToolCallMLMessage
+    output: ChatMLMessage | ToolMLMessage | ToolCallMLMessage
     settings: ChatModelSettings
     templating: Optional[Templating]
     timings: Timings | StreamTimings

@@ -7,6 +7,7 @@ from melting_schemas.utils import Timings, StreamTimings
 from ..completion.chat import ChatModelSettings
 from ..json_schema import FunctionJSONSchema
 from ..meta import Creator
+from .tcall import ToolCallMLMessage, ToolMLMessage
 
 
 class FCallModelSettings(TypedDict, total=False):
@@ -51,7 +52,13 @@ class ChatMLMessage(TypedDict):
 
 class RawFCallRequest(BaseModel):
     functions: list[FunctionJSONSchema]
-    messages: list[ChatMLMessage | FunctionCallMLMessage | FunctionMLMessage]
+    messages: list[
+        ChatMLMessage
+        | FunctionCallMLMessage
+        | FunctionMLMessage
+        | ToolCallMLMessage
+        | ToolMLMessage
+    ]
     settings: FCallModelSettings
 
     class Config:
@@ -152,7 +159,13 @@ class FCallCompletionCreationResponse(BaseModel):
     created_by: Creator
     finish_reason: Literal["stop", "length", "function_call"]
     id: str = Field(..., alias="_id")
-    messages: list[ChatMLMessage | FunctionCallMLMessage | FunctionMLMessage]
+    messages: list[
+        ChatMLMessage
+        | FunctionCallMLMessage
+        | FunctionMLMessage
+        | ToolCallMLMessage
+        | ToolMLMessage
+    ]
     output: ChatMLMessage | FunctionCallMLMessage | FunctionMLMessage
     settings: ChatModelSettings
     templating: Optional[Templating]
