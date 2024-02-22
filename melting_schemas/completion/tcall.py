@@ -1,5 +1,5 @@
 import datetime
-from typing import Literal, NotRequired, Optional, Required, TypedDict, Type
+from typing import Literal, Optional, Required, TypedDict
 from pydantic import BaseModel
 
 from melting_schemas.meta import Creator
@@ -15,12 +15,6 @@ from melting_schemas.utils import Timings, StreamTimings
 from ..completion.chat import ChatModelSettings
 from ..json_schema import FunctionJSONSchema
 from ..meta import Creator
-
-
-class ChatMLMessage(TypedDict):
-    content: str
-    name: NotRequired[str]
-    role: Literal["user", "assistant", "system"]
 
 
 class TCallModelSettings(TypedDict, total=False):
