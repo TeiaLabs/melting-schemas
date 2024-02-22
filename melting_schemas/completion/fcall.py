@@ -8,8 +8,6 @@ from ..completion.chat import ChatModelSettings
 from ..json_schema import FunctionJSONSchema
 from ..meta import Creator
 
-# from .tcall import ToolCallMLMessage, ToolMLMessage
-
 
 class FCallModelSettings(TypedDict, total=False):
     """

@@ -5,7 +5,6 @@ from pydantic import BaseModel
 from melting_schemas.meta import Creator
 
 from ..completion.chat import ChatMLMessage, Templating
-from ..completion.fcall import FunctionCallMLMessage, FunctionMLMessage
 
 from ..json_schema import FunctionJSONSchema
 from datetime import datetime
@@ -58,16 +57,9 @@ class ToolJSONSchema(TypedDict):
 
 class RawTCallRequest(BaseModel):
     tools: list[ToolJSONSchema]
-    messages: list[
-        ChatMLMessage
-        | FunctionCallMLMessage
-        | FunctionMLMessage
-        | ToolCallMLMessage
-        | ToolMLMessage
-    ]
+    messages: list[ChatMLMessage | ToolCallMLMessage | ToolMLMessage]
     settings: TCallModelSettings
 
-    # TODO: add better examples
     class Config:
         smart_unions = True
         examples = {
@@ -120,13 +112,7 @@ class TCallCompletionCreationResponse(BaseModel):
     created_by: Creator
     finish_reason: Literal["stop", "length", "function_call", "tool_calls"]
     id: str = Field(..., alias="_id")
-    messages: list[
-        ChatMLMessage
-        | FunctionCallMLMessage
-        | FunctionMLMessage
-        | ToolCallMLMessage
-        | ToolMLMessage
-    ]
+    messages: list[ChatMLMessage | ToolCallMLMessage | ToolMLMessage]
     output: ChatMLMessage | ToolMLMessage | ToolCallMLMessage
     settings: ChatModelSettings
     templating: Optional[Templating]
