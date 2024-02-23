@@ -152,7 +152,13 @@ class FCallCompletionCreationResponse(BaseModel):
     created_by: Creator
     finish_reason: Literal["stop", "length", "function_call"]
     id: str = Field(..., alias="_id")
-    messages: list[ChatMLMessage | FunctionCallMLMessage | FunctionMLMessage]
+    messages: list[
+        ChatMLMessage
+        | FunctionCallMLMessage
+        | FunctionMLMessage
+        # | ToolCallMLMessage
+        # | ToolMLMessage
+    ]
     output: ChatMLMessage | FunctionCallMLMessage | FunctionMLMessage
     settings: ChatModelSettings
     templating: Optional[Templating]
