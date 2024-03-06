@@ -4,8 +4,4 @@ from .prompt import (
     CreateCompletionPrompt,
     GeneratedFields,
     GetCompletionPrompt,
-    UpdateChatPrompt,
-    UpdateChatTemplateData,
-    UpdateCompletionPrompt,
-    UpdateSettings,
 )
