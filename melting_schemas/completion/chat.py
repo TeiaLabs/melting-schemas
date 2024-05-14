@@ -20,6 +20,7 @@ class ChatModelSettings(TypedDict, total=False):
 
     Heavily inspired by https://platform.openai.com/docs/api-reference/chat/create
     """
+
     model: Required[str]
     max_tokens: int  # defaults to inf
     temperature: float  # ValueRange(0, 2)
@@ -39,7 +40,7 @@ class TokenUsage(TypedDict):
 class TemplateInputs(TypedDict):
     inputs: dict[str, str]
     name: NotRequired[str]
-    role: Literal["user", "system"]
+    role: Literal["user", "system", "assistant"]
     # advanced usage: select sub-templates
     template_name: NotRequired[str]
 
