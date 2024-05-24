@@ -5,4 +5,5 @@ from .prompt import (
     GeneratedFields,
     GetCompletionPrompt,
     UpdateChatPrompt,
+    UpdateCompletionPrompt,
 )
