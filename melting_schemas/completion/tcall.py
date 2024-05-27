@@ -1,17 +1,13 @@
 import datetime
+from datetime import datetime
 from typing import Literal, Optional, Required, TypedDict
-from pydantic import BaseModel
+
+from pydantic import BaseModel, Field
 
 from melting_schemas.meta import Creator
+from melting_schemas.utils import StreamTimings, Timings
 
-from ..completion.chat import ChatMLMessage, Templating
-
-from ..json_schema import FunctionJSONSchema
-from datetime import datetime
-from pydantic import BaseModel, Field
-from melting_schemas.utils import Timings, StreamTimings
-
-from ..completion.chat import ChatModelSettings
+from ..completion.chat import ChatMLMessage, ChatModelSettings, Templating
 from ..json_schema import FunctionJSONSchema
 from ..meta import Creator
 
@@ -59,6 +55,7 @@ class RawTCallRequest(BaseModel):
     tools: list[ToolJSONSchema]
     messages: list[ChatMLMessage | ToolCallMLMessage | ToolMLMessage]
     settings: TCallModelSettings
+    tool_choice: Optional[Literal["auto", "required"] | dict] = "auto"
 
     class Config:
         smart_unions = True
@@ -97,6 +94,7 @@ class RawTCallRequest(BaseModel):
                         "role": "assistant",
                     },
                 ],
+                "tool_choice": "auto",
             }
         }
 
