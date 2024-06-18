@@ -1,4 +1,4 @@
-from typing import TypedDict
+from typing import Required, TypedDict
 
 
 class Timings(TypedDict):
@@ -11,3 +11,9 @@ class StreamTimings(TypedDict):
     max: float
     min: float
     total: float
+
+
+class TokenUsage(TypedDict, total=False):
+    prompt_tokens: Required[int]
+    total_tokens: Required[int]
+    completion_tokens: int

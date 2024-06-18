@@ -1,6 +1,6 @@
 import datetime
 from datetime import datetime
-from typing import Literal, Optional, Required, TypedDict
+from typing import Any, Literal, NotRequired, Optional, TypedDict
 
 from pydantic import BaseModel, Field
 
@@ -10,6 +10,7 @@ from melting_schemas.utils import StreamTimings, Timings
 from ..completion.chat import ChatMLMessage, ChatModelSettings, Templating
 from ..json_schema import FunctionJSONSchema
 from ..meta import Creator
+from ..utils import TokenUsage
 
 
 class TCallModelSettings(TypedDict, total=False):

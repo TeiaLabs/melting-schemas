@@ -1,12 +1,14 @@
 from datetime import datetime
-from typing import Literal, NotRequired, Optional, Required, TypedDict, Type
+from typing import Literal, NotRequired, Optional, Required, TypedDict
 
 from pydantic import BaseModel, Field
-from melting_schemas.utils import Timings, StreamTimings
+
+from melting_schemas.utils import StreamTimings, Timings
 
 from ..completion.chat import ChatModelSettings
 from ..json_schema import FunctionJSONSchema
 from ..meta import Creator
+from ..utils import TokenUsage
 
 
 class FCallModelSettings(TypedDict, total=False):
@@ -125,12 +127,6 @@ class RawFCallRequest(BaseModel):
                 },
             },
         }
-
-
-class TokenUsage(TypedDict):
-    prompt_tokens: int
-    completion_tokens: int
-    total_tokens: int
 
 
 class TemplateInputs(TypedDict):

@@ -1,16 +1,10 @@
 from datetime import datetime
-from typing import Optional, TypedDict
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
 from ..meta import Creator
-
-
-class TokenUsage(TypedDict):
-    """OpenAI compatible."""
-
-    prompt_tokens: int
-    total_tokens: int
+from ..utils import TokenUsage
 
 
 class TextEncodingResponse(BaseModel):
