@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 from melting_schemas.utils import StreamTimings, Timings
 
 from ..completion.chat import ChatModelSettings
-from ..json_schema import FunctionJSONSchema
+from ..json_schema import FunctionJsonSchema
 from ..meta import Creator
 from ..utils import TokenUsage
 
@@ -52,7 +52,7 @@ class ChatMLMessage(TypedDict):
 
 
 class RawFCallRequest(BaseModel):
-    functions: list[FunctionJSONSchema]
+    functions: list[FunctionJsonSchema]
     messages: list[ChatMLMessage | FunctionCallMLMessage | FunctionMLMessage]
     settings: FCallModelSettings
 

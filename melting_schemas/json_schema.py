@@ -1,19 +1,29 @@
-from typing import Any, Literal, NotRequired, TypedDict
+from typing import Literal
+
+from pydantic import BaseModel, Field
 
 
-class Property(TypedDict):
-    type: str
-    description: str
-    default: NotRequired[str]
+class NativeToolParam(BaseModel):
+    type: Literal["string", "integer", "number", "boolean", "null"]
 
 
-class FunctionParameters(TypedDict):
-    type: Literal["object"]
-    properties: dict[str, Property]
-    required: list[str]
+class ArrayToolParam(BaseModel):
+    type: Literal["array"] = "array"
+    items: "NativeToolParam | ArrayToolParam | ObjectToolParam"
 
 
-class FunctionJSONSchema(TypedDict):
+class ObjectToolParam(BaseModel):
+    type: Literal["object"] = "object"
+    properties: dict[str, "NativeToolParam | ArrayToolParam | ObjectToolParam"] = Field(
+        default_factory=dict
+    )
+
+
+class FunctionJsonSchema(BaseModel):
     name: str
-    description: str
-    parameters: dict[str, Any]  # FunctionParameters is incomplete
+    description: str = ""
+    parameters: ObjectToolParam = Field(default_factory=ObjectToolParam)
+
+
+ArrayToolParam.update_forward_refs()
+ObjectToolParam.update_forward_refs()

@@ -8,31 +8,29 @@ from melting_schemas.meta import Creator
 from melting_schemas.utils import StreamTimings, Timings
 
 from ..completion.chat import ChatMLMessage, ChatModelSettings, Templating
-from ..json_schema import FunctionJSONSchema
+from ..json_schema import FunctionJsonSchema
 from ..meta import Creator
 from ..utils import TokenUsage
 
 
-class TCallModelSettings(TypedDict, total=False):
-    """
-    Change these settings to tweak the model's behavior.
-
-    Heavily inspired by https://platform.openai.com/docs/api-reference/chat/create
-    """
-
-    model: Required[str]
-    max_tokens: int  # defaults to inf
-    temperature: float  # ValueRange(0, 2)
-    top_p: float  # ValueRange(0, 1)
-    frequency_penalty: float  # ValueRange(-2, 2) defaults to 0
-    presence_penalty: float  # ValueRange(-2, 2) defaults to 0
-    logit_bias: dict[str, int]  # valmap(ValueRange(-100, 100))
-    stop: list[str]  # MaxLen(4)
+class TCallModelSettings(BaseModel):
+    model: str
+    max_iterations: int = 5  # Maximum back and fourth allowed
+    max_tokens: int | None = None  # defaults to inf
+    temperature: float | None = None  # ValueRange(0, 2)
+    top_p: float | None = None  # ValueRange(0, 1)
+    frequency_penalty: float | None = None  # ValueRange(-2, 2) defaults to 0
+    presence_penalty: float | None = None  # ValueRange(-2, 2) defaults to 0
+    logit_bias: dict[str, int] | None = None  # valmap(ValueRange(-100, 100))
+    stop: list[str] | None = None  # MaxLen(4)
+    tool_choice: Literal["auto", "required"] = "auto"  # defaults to auto
 
 
 class ToolCall(TypedDict):
-    name: str  # MaxLen(64) TextMatch(r"^[a-zA-Z0-9_]*$")
+    id: str
+    name: str
     arguments: str
+    extra: NotRequired[dict[str, str]]
 
 
 class ToolCallMLMessage(TypedDict):
@@ -47,16 +45,15 @@ class ToolMLMessage(TypedDict):
     role: Literal["tool"]
 
 
-class ToolJSONSchema(TypedDict):
-    type: Literal["function"]
-    function: FunctionJSONSchema
+class ToolJsonSchema(BaseModel):
+    type: Literal["function"] = "function"
+    function: FunctionJsonSchema
 
 
 class RawTCallRequest(BaseModel):
-    tools: list[ToolJSONSchema]
+    tools: list[ToolJsonSchema]
     messages: list[ChatMLMessage | ToolCallMLMessage | ToolMLMessage]
     settings: TCallModelSettings
-    tool_choice: Optional[Literal["auto", "required"] | dict] = "auto"
 
     class Config:
         smart_unions = True
@@ -100,10 +97,24 @@ class RawTCallRequest(BaseModel):
         }
 
 
-class TokenUsage(TypedDict):
-    prompt_tokens: int
-    completion_tokens: int
-    total_tokens: int
+class NativeTCallRequest(BaseModel):
+    tools: list[str]
+    messages: list[ChatMLMessage | ToolCallMLMessage | ToolMLMessage]
+    settings: TCallModelSettings
+
+    class Config:
+        smart_unions = True
+        examples = {
+            "Tool calling": {
+                "tools": ["example-tool-name"],
+                "messages": [
+                    {
+                        "content": "Hello",
+                        "role": "user",
+                    }
+                ],
+            }
+        }
 
 
 class TCallCompletionCreationResponse(BaseModel):
@@ -120,3 +131,39 @@ class TCallCompletionCreationResponse(BaseModel):
 
     class Config:
         smart_unions = True
+
+
+class StaticParams(BaseModel):
+    query: dict[str, Any] = Field(default_factory=dict)
+    body: dict[str, Any] = Field(default_factory=dict)
+
+
+class DynamicParams(BaseModel):
+    path: list[str] = Field(default_factory=list)
+    query: list[str] = Field(default_factory=list)
+    body: list[str] = Field(default_factory=list)
+
+
+class ToolArgMap(BaseModel):
+    location: str
+    name: str
+
+
+class HttpToolCallee(BaseModel):
+    type: Literal["http"] = "http"
+    method: Literal["GET", "POST"]
+    forward_headers: list[str] = Field(alias="forward-headers", default_factory=list)
+    headers: dict[str, str] = Field(default_factory=dict)
+    url: str
+    static: StaticParams = Field(default_factory=StaticParams)
+    dynamic: DynamicParams = Field(default_factory=DynamicParams)
+
+
+class NoopToolCallee(BaseModel):
+    type: Literal["noop"] = "noop"
+
+
+class ToolSpec(BaseModel):
+    name: str
+    callee: HttpToolCallee | NoopToolCallee
+    json_schema: ToolJsonSchema
