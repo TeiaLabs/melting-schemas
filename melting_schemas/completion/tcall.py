@@ -15,7 +15,7 @@ from ..utils import TokenUsage
 
 class TCallModelSettings(BaseModel):
     model: str
-    max_iterations: int = 5  # Maximum back and fourth allowed
+    max_iterations: int = 10  # Maximum back and fourth allowed
     max_tokens: int | None = None  # defaults to inf
     temperature: float | None = None  # ValueRange(0, 2)
     top_p: float | None = None  # ValueRange(0, 1)
@@ -34,8 +34,8 @@ class ToolCall(TypedDict):
 
 
 class ToolCallMLMessage(TypedDict):
-    content: Optional[None]
-    tool_call: list[ToolCall]
+    content: Optional[str]
+    tool_calls: list[ToolCall]
     role: Literal["assistant"]
 
 
@@ -50,8 +50,44 @@ class ToolJsonSchema(BaseModel):
     function: FunctionJsonSchema
 
 
+class StaticParams(BaseModel):
+    query: dict[str, Any] = Field(default_factory=dict)
+    body: dict[str, Any] = Field(default_factory=dict)
+
+
+class DynamicParams(BaseModel):
+    path: list[str] = Field(default_factory=list)
+    query: list[str] = Field(default_factory=list)
+    body: list[str] = Field(default_factory=list)
+
+
+class ToolArgMap(BaseModel):
+    location: str
+    name: str
+
+
+class HttpToolCallee(BaseModel):
+    type: Literal["http"] = "http"
+    method: Literal["GET", "POST"]
+    forward_headers: list[str] = Field(alias="forward-headers", default_factory=list)
+    headers: dict[str, str] = Field(default_factory=dict)
+    url: str
+    static: StaticParams = Field(default_factory=StaticParams)
+    dynamic: DynamicParams = Field(default_factory=DynamicParams)
+
+
+class NoopToolCallee(BaseModel):
+    type: Literal["noop"] = "noop"
+
+
+class ToolSpec(BaseModel):
+    name: str
+    callee: HttpToolCallee | NoopToolCallee
+    json_schema: ToolJsonSchema
+
+
 class RawTCallRequest(BaseModel):
-    tools: list[ToolJsonSchema]
+    tools: list[ToolSpec]
     messages: list[ChatMLMessage | ToolCallMLMessage | ToolMLMessage]
     settings: TCallModelSettings
 
@@ -61,19 +97,36 @@ class RawTCallRequest(BaseModel):
             "Tool calling": {
                 "tools": [
                     {
-                        "type": "function",
-                        "function": {
-                            "name": "my_function",
-                            "description": "This is my function",
-                            "parameters": {
-                                "type": "object",
-                                "properties": {
-                                    "my_param": {
-                                        "type": "string",
-                                        "description": "This is my parameter",
-                                    }
+                        "type": "http",
+                        "callee": {
+                            "method": "GET",
+                            "forward-headers": ["x-user-email"],
+                            "headers": {"authorization": "my-special-api-token"},
+                            "url": "https://datasources.allai.digital/{name}/search",
+                            "static": {
+                                "query": {"limit": 2},
+                                "body": {"top_k": 10},
+                            },
+                            "dynamic": {
+                                "path": ["name"],
+                                "body": ["top_k", "search_query"],
+                            },
+                        },
+                        "json_schema": {
+                            "type": "function",
+                            "function": {
+                                "name": "my_function",
+                                "description": "This is my function",
+                                "parameters": {
+                                    "type": "object",
+                                    "properties": {
+                                        "my_param": {
+                                            "type": "string",
+                                            "description": "This is my parameter",
+                                        }
+                                    },
+                                    "required": ["my_param"],
                                 },
-                                "required": ["my_param"],
                             },
                         },
                     }
@@ -123,6 +176,7 @@ class TCallCompletionCreationResponse(BaseModel):
     finish_reason: Literal["stop", "length", "function_call", "tool_calls"]
     id: str = Field(..., alias="_id")
     messages: list[ChatMLMessage | ToolCallMLMessage | ToolMLMessage]
+    tool_calls: list[ToolCall]
     output: ChatMLMessage | ToolMLMessage | ToolCallMLMessage
     settings: ChatModelSettings
     templating: Optional[Templating]
@@ -131,39 +185,3 @@ class TCallCompletionCreationResponse(BaseModel):
 
     class Config:
         smart_unions = True
-
-
-class StaticParams(BaseModel):
-    query: dict[str, Any] = Field(default_factory=dict)
-    body: dict[str, Any] = Field(default_factory=dict)
-
-
-class DynamicParams(BaseModel):
-    path: list[str] = Field(default_factory=list)
-    query: list[str] = Field(default_factory=list)
-    body: list[str] = Field(default_factory=list)
-
-
-class ToolArgMap(BaseModel):
-    location: str
-    name: str
-
-
-class HttpToolCallee(BaseModel):
-    type: Literal["http"] = "http"
-    method: Literal["GET", "POST"]
-    forward_headers: list[str] = Field(alias="forward-headers", default_factory=list)
-    headers: dict[str, str] = Field(default_factory=dict)
-    url: str
-    static: StaticParams = Field(default_factory=StaticParams)
-    dynamic: DynamicParams = Field(default_factory=DynamicParams)
-
-
-class NoopToolCallee(BaseModel):
-    type: Literal["noop"] = "noop"
-
-
-class ToolSpec(BaseModel):
-    name: str
-    callee: HttpToolCallee | NoopToolCallee
-    json_schema: ToolJsonSchema

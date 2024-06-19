@@ -1,8 +1,9 @@
 from typing import Required, TypedDict
 
 
-class Timings(TypedDict):
-    total: float
+class Timings(TypedDict, total=False):
+    total: Required[float]
+    completion: float
 
 
 class StreamTimings(TypedDict):
