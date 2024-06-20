@@ -133,6 +133,7 @@ class TCallRequest(BaseModel):
                     "tools": [
                         {
                             "type": "http",
+                            "name": "my_function",
                             "callee": {
                                 "method": "GET",
                                 "forward-headers": ["x-user-email"],
@@ -194,6 +195,12 @@ class TCallRequest(BaseModel):
                 }
             },
         }
+
+
+class TCallProcessedRequest(BaseModel):
+    tools: list[ToolSpec] | list[ToolJsonSchema]
+    messages: list[ChatMLMessage | ToolCallMLMessage | ToolMLMessage]
+    settings: TCallModelSettings
 
 
 class TCallCompletionCreationResponse(BaseModel):
