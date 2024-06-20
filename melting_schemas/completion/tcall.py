@@ -86,33 +86,18 @@ class ToolSpec(BaseModel):
     json_schema: ToolJsonSchema
 
 
-class RawTCallRequest(BaseModel):
-    tools: list[ToolSpec]
+class TCallRequest(BaseModel):
+    tools: list[ToolSpec] | list[ToolJsonSchema] | list[str]
     messages: list[ChatMLMessage | ToolCallMLMessage | ToolMLMessage]
     settings: TCallModelSettings
 
     class Config:
         smart_unions = True
         examples = {
-            "Tool calling": {
-                "tools": [
-                    {
-                        "type": "http",
-                        "callee": {
-                            "method": "GET",
-                            "forward-headers": ["x-user-email"],
-                            "headers": {"authorization": "my-special-api-token"},
-                            "url": "https://datasources.allai.digital/{name}/search",
-                            "static": {
-                                "query": {"limit": 2},
-                                "body": {"top_k": 10},
-                            },
-                            "dynamic": {
-                                "path": ["name"],
-                                "body": ["top_k", "search_query"],
-                            },
-                        },
-                        "json_schema": {
+            "Raw Tool Selection": {
+                "value": {
+                    "tools": [
+                        {
                             "type": "function",
                             "function": {
                                 "name": "my_function",
@@ -128,45 +113,85 @@ class RawTCallRequest(BaseModel):
                                     "required": ["my_param"],
                                 },
                             },
-                        },
-                    }
-                ],
-                "messages": [
-                    {
-                        "content": "Hello",
-                        "role": "user",
+                        }
+                    ],
+                    "messages": [
+                        {
+                            "content": "Hello",
+                            "role": "user",
+                        }
+                    ],
+                    "settings": {
+                        "model": "gpt-4o",
+                        "tool_choice": "auto",
                     },
-                    {
-                        "content": "my_function",
-                        "function_call": {
-                            "name": "my_function",
-                            "arguments": '{"my_param": "my_value"}',
-                        },
-                        "role": "assistant",
+                }
+            },
+            "Raw Tool Calling": {
+                "value": {
+                    "tools": [
+                        {
+                            "type": "http",
+                            "callee": {
+                                "method": "GET",
+                                "forward-headers": ["x-user-email"],
+                                "headers": {"authorization": "my-special-api-token"},
+                                "url": "https://datasources.allai.digital/{name}/search",
+                                "static": {
+                                    "query": {"limit": 2},
+                                    "body": {"top_k": 10},
+                                },
+                                "dynamic": {
+                                    "path": ["name"],
+                                    "body": ["top_k", "search_query"],
+                                },
+                            },
+                            "json_schema": {
+                                "type": "function",
+                                "function": {
+                                    "name": "my_function",
+                                    "description": "This is my function",
+                                    "parameters": {
+                                        "type": "object",
+                                        "properties": {
+                                            "my_param": {
+                                                "type": "string",
+                                                "description": "This is my parameter",
+                                            }
+                                        },
+                                        "required": ["my_param"],
+                                    },
+                                },
+                            },
+                        }
+                    ],
+                    "messages": [
+                        {
+                            "content": "Hello",
+                            "role": "user",
+                        }
+                    ],
+                    "settings": {
+                        "model": "gpt-4o",
+                        "tool_choice": "auto",
                     },
-                ],
-                "tool_choice": "auto",
-            }
-        }
-
-
-class NativeTCallRequest(BaseModel):
-    tools: list[str]
-    messages: list[ChatMLMessage | ToolCallMLMessage | ToolMLMessage]
-    settings: TCallModelSettings
-
-    class Config:
-        smart_unions = True
-        examples = {
-            "Tool calling": {
-                "tools": ["example-tool-name"],
-                "messages": [
-                    {
-                        "content": "Hello",
-                        "role": "user",
-                    }
-                ],
-            }
+                }
+            },
+            "Native Tool Calling": {
+                "value": {
+                    "tools": ["example-tool-name"],
+                    "messages": [
+                        {
+                            "content": "Hello",
+                            "role": "user",
+                        }
+                    ],
+                    "settings": {
+                        "model": "gpt-4o",
+                        "tool_choice": "auto",
+                    },
+                }
+            },
         }
 
 
