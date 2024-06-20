@@ -30,6 +30,7 @@ class ToolCall(TypedDict):
     id: str
     name: str
     arguments: str
+    response: NotRequired[Any]
     extra: NotRequired[dict[str, str]]
 
 
