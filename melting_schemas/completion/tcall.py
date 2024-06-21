@@ -29,7 +29,7 @@ class TCallModelSettings(BaseModel):
 class ToolCallChunk(TypedDict):
     finish_reason: Literal[
         "stop", "length", "tool_calls", "content_filter", "function_call"
-    ] # only present after the completion finished
+    ]  # only present after the completion finished
 
     index: int
     id: str  # Only present in the first iteration, needs to be mapped based on index
@@ -45,7 +45,7 @@ class ToolCallChunk(TypedDict):
 class ChatChunk(TypedDict):
     finish_reason: Literal[
         "stop", "length", "tool_calls", "content_filter", "function_call"
-    ]# only present after the completion finished
+    ]  # only present after the completion finished
     delta: str
 
     usage: TokenUsage  # Only present after the completion finished
@@ -96,7 +96,7 @@ class ToolArgMap(BaseModel):
 class HttpToolCallee(BaseModel):
     type: Literal["http"] = "http"
     method: Literal["GET", "POST"]
-    forward_headers: list[str] = Field(alias="forward-headers", default_factory=list)
+    forward_headers: list[str] = Field(default_factory=list)
     headers: dict[str, str] = Field(default_factory=dict)
     url: str
     static: StaticParams = Field(default_factory=StaticParams)
@@ -162,7 +162,7 @@ class TCallRequest(BaseModel):
                             "name": "my_function",
                             "callee": {
                                 "method": "GET",
-                                "forward-headers": ["x-user-email"],
+                                "forward_headers": ["x-user-email"],
                                 "headers": {"authorization": "my-special-api-token"},
                                 "url": "https://datasources.allai.digital/{name}/search",
                                 "static": {
