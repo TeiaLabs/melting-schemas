@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field
 from melting_schemas.utils import StreamTimings, Timings
 
 from ..meta import Creator
+from ..utils import TokenUsage
 
 
 class ChatMLMessage(TypedDict):
@@ -29,12 +30,6 @@ class ChatModelSettings(TypedDict, total=False):
     presence_penalty: float  # ValueRange(-2, 2) defaults to 0
     logit_bias: dict[int, int]  # valmap(ValueRange(-100, 100))
     stop: list[str]  # MaxLen(4)
-
-
-class TokenUsage(TypedDict):
-    prompt_tokens: int
-    completion_tokens: int
-    total_tokens: int
 
 
 class TemplateInputs(TypedDict):

@@ -1,12 +1,14 @@
 from datetime import datetime
-from typing import Literal, NotRequired, Optional, Required, TypedDict, Type
+from typing import Literal, NotRequired, Optional, Required, TypedDict
 
 from pydantic import BaseModel, Field
-from melting_schemas.utils import Timings, StreamTimings
+
+from melting_schemas.utils import StreamTimings, Timings
 
 from ..completion.chat import ChatModelSettings
-from ..json_schema import FunctionJSONSchema
+from ..json_schema import FunctionJsonSchema
 from ..meta import Creator
+from ..utils import TokenUsage
 
 
 class FCallModelSettings(TypedDict, total=False):
@@ -50,7 +52,7 @@ class ChatMLMessage(TypedDict):
 
 
 class RawFCallRequest(BaseModel):
-    functions: list[FunctionJSONSchema]
+    functions: list[FunctionJsonSchema]
     messages: list[ChatMLMessage | FunctionCallMLMessage | FunctionMLMessage]
     settings: FCallModelSettings
 
@@ -125,12 +127,6 @@ class RawFCallRequest(BaseModel):
                 },
             },
         }
-
-
-class TokenUsage(TypedDict):
-    prompt_tokens: int
-    completion_tokens: int
-    total_tokens: int
 
 
 class TemplateInputs(TypedDict):

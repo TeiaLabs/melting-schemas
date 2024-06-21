@@ -5,16 +5,11 @@ from pydantic import BaseModel, Field
 
 from ..completion.text import TextModelSettings
 from ..meta import Creator
+from ..utils import TokenUsage
 
 
 class Timings(TypedDict):
     total: float
-
-
-class TokenUsage(TypedDict):
-    prompt_tokens: int
-    completion_tokens: int
-    total_tokens: int
 
 
 class TextCompletionCreationResponse(BaseModel):
