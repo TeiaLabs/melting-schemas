@@ -27,37 +27,22 @@ class TCallModelSettings(BaseModel):
 
 
 class ToolCallChunk(TypedDict):
-    finish_reason: Literal[
-        "stop", "length", "tool_calls", "content_filter", "function_call"
-    ]  # only present after the completion finished
-
     index: int
-    id: str  # Only present in the first iteration, needs to be mapped based on index
-    name: str  # Only present in the first iteration, needs to be mapped based on index
-    arguments: str  # Incrementally added each iteration
-
-    extra: NotRequired[dict[str, str]]  # Who knows if this will be necessary someday
-
-    usage: TokenUsage  # Only present after the completion finished
-    timings: Timings  # Injected after the completion finished
+    id: str  
+    name: str  
+    arguments: str  
 
 
-class ChatChunk(TypedDict):
-    finish_reason: Literal[
-        "stop", "length", "tool_calls", "content_filter", "function_call"
-    ]  # only present after the completion finished
+class ChatChunk(TypedDict, total=False):
     delta: str
-
-    usage: TokenUsage  # Only present after the completion finished
-    timings: Timings  # Injected after the completion finished
 
 
 class ToolCall(TypedDict):
+    index: int
     id: str
     name: str
     arguments: str
     response: NotRequired[Any]
-    extra: NotRequired[dict[str, str]]
 
 
 class ToolCallMLMessage(TypedDict):
@@ -67,6 +52,7 @@ class ToolCallMLMessage(TypedDict):
 
 
 class ToolMLMessage(TypedDict):
+    tool_call_id: NotRequired[str]
     content: str
     name: str
     role: Literal["tool"]
