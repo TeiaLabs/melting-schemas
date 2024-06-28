@@ -38,7 +38,7 @@ class ChatChunk(TypedDict, total=False):
 
 
 class ToolCall(TypedDict):
-    index: int
+    index: NotRequired[int]
     id: str
     name: str
     arguments: str
@@ -116,7 +116,7 @@ class TCallRequest(BaseModel):
     class Config:
         smart_unions = True
         examples = {
-            "Raw Tool Selection": {
+            "Raw JSON schema": {
                 "value": {
                     "tools": [
                         {
@@ -149,7 +149,47 @@ class TCallRequest(BaseModel):
                     },
                 }
             },
-            "Raw Tool Calling": {
+            "Raw JSON schema + static plugin request": {
+                "value": {
+                    "tools": [
+                        {
+                            "type": "function",
+                            "function": {
+                                "name": "get_weather",
+                                "description": "Get the current weather in a given city.",
+                                "parameters": {
+                                    "type": "object",
+                                    "properties": {
+                                        "location": {
+                                            "type": "string",
+                                            "description": "The city and state, e.g. San Francisco, CA",
+                                        }
+                                    },
+                                    "required": ["location"],
+                                },
+                            },
+                        }
+                    ],
+                    "static_tools": [
+                        {
+                            "name": "get_weather",
+                            "arguments": {"location": "Boston"},
+                            "response": {"temperature": 70, "weather": "sunny"},
+                        }
+                    ],
+                    "messages": [
+                        {
+                            "content": "What is the weather like? @get_weather:Boston",
+                            "role": "user",
+                        }
+                    ],
+                    "settings": {
+                        "model": "gpt-4o",
+                        "tool_choice": "auto",
+                    },
+                }
+            },
+            "Volatile plugin": {
                 "value": {
                     "tools": [
                         {
@@ -200,7 +240,7 @@ class TCallRequest(BaseModel):
                     },
                 }
             },
-            "Native Tool Calling": {
+            "Persisted plugin": {
                 "value": {
                     "tools": ["example-tool-name"],
                     "messages": [
@@ -215,7 +255,7 @@ class TCallRequest(BaseModel):
                     },
                 }
             },
-            "Native Tool Calling after selection": {
+            "Persisted plugin (after selection)": {
                 "tools": ["get_weather"],
                 "messages": [
                     {"content": "What is the weather like in Boston?", "role": "user"},
