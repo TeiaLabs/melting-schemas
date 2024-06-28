@@ -4,7 +4,7 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 from ..meta import Creator
-from ..utils import TokenUsage
+from ..usage import TokenUsage
 
 
 class TextEncodingResponse(BaseModel):
@@ -19,15 +19,3 @@ class TextEncodingResponse(BaseModel):
 class RawTextEncoding(BaseModel):
     snippets: list[str]
     model: str
-
-    class Config:
-        examples = {
-            "Minimal": {
-                "value": {
-                    "model": "sentence-transformers/all-MiniLM-L6-v2",
-                    "snippets": [
-                        "I like to eat apples.",
-                    ],
-                },
-            },
-        }

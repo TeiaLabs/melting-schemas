@@ -1,0 +1,49 @@
+from prompts.turbo import PromptRole, TemplateInputs
+
+from .prompt import ChatPromptTemplate, Template
+
+
+def chat_prompt_template_examples():
+    minimal_prompt_template = ChatPromptTemplate(
+        assistant_templates="<text>",
+        description="Single of its kind, example app, teia org.",
+        name="teia.example_app.single.example01",
+        system_templates="<text>",
+        user_templates="<text>",
+        initial_template_data=[
+            TemplateInputs(role=PromptRole.SYSTEM, name="", inputs={"a": "a"}, template_name="name")
+        ],
+        settings={"model": "gpt-3.5-turbo"},
+    )
+
+    timeaware_prompt_template = ChatPromptTemplate(
+        assistant_templates="<text>",
+        description="Single of its kind, example app, teia org.",
+        name="teia.example.1",
+        system_templates="Current timestamp: <now>\nYou are a helpful chatbot.",
+        user_templates="<text>",
+        settings={
+            "model": "gpt-3.5-turbo",
+        },
+    )
+
+    many_template = ChatPromptTemplate(
+        name="teia.example.2",
+        description="A development example.",
+        system_templates=[
+            Template(template_name="plugin_prompt", template="<plugin_data>"),
+        ],
+        user_templates=[
+            Template(template_name="user_prompt", template="<question>"),
+        ],
+        assistant_templates=[
+            Template(template_name="assistant_prompt", template="<message>"),
+        ],
+        settings={
+            "model": "gpt-3.5-turbo",
+            "max_tokens": 200,
+            "temperature": 0.25,
+        },
+    )
+
+    return [minimal_prompt_template, timeaware_prompt_template, many_template]

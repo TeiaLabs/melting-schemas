@@ -1,15 +1,11 @@
 from datetime import datetime
-from typing import Literal, Optional, TypedDict
+from typing import Literal, Optional
 
 from pydantic import BaseModel, Field
 
 from ..completion.text import TextModelSettings
 from ..meta import Creator
-from ..utils import TokenUsage
-
-
-class Timings(TypedDict):
-    total: float
+from ..usage import Timings, TokenUsage
 
 
 class TextCompletionCreationResponse(BaseModel):

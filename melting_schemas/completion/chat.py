@@ -3,10 +3,8 @@ from typing import Literal, NotRequired, Optional, Required, TypedDict
 
 from pydantic import BaseModel, Field
 
-from melting_schemas.utils import StreamTimings, Timings
-
 from ..meta import Creator
-from ..utils import TokenUsage
+from ..usage import StreamTimings, Timings, TokenUsage
 
 
 class ChatMLMessage(TypedDict):

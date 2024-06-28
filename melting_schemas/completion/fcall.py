@@ -8,7 +8,7 @@ from melting_schemas.utils import StreamTimings, Timings
 from ..completion.chat import ChatModelSettings
 from ..json_schema import FunctionJsonSchema
 from ..meta import Creator
-from ..utils import TokenUsage
+from ..usage import TokenUsage
 
 
 class FCallModelSettings(TypedDict, total=False):

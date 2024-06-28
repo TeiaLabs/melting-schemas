@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=60", "setuptools-scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["melting_schemas"]
+namespaces = false
+
+[tool.setuptools_scm]
+version_scheme = "post-release"
+local_scheme = "no-local-version"
+
+[tool.black]
+line-length = 100
+
+[tool.isort]
+profile = "black"
+
+[project]
+name = "melting_schemas"
+authors = [{ name = "TeiaLabs", email = "contato@teialabs.com" }]
+description = "Teia Melting Face API Schemas"
+readme = "README.md"
+requires-python = ">=3.12"
+dynamic = ["version"]
+dependencies = [
+    "AIPrompts==0.5.6",   # Verify if this version is okay
+    "pydantic[email]>=2",
+    "fastapi>=0.100",
+]
+
+[project.optional-dependencies]
+dev = ["black", "isort", "pytest"]

@@ -4,13 +4,10 @@ from typing import Any, Literal, NotRequired, Optional, TypedDict
 
 from pydantic import BaseModel, Field
 
-from melting_schemas.meta import Creator
-from melting_schemas.utils import StreamTimings, Timings
-
 from ..completion.chat import ChatMLMessage, ChatModelSettings, Templating
 from ..json_schema import FunctionJsonSchema
 from ..meta import Creator
-from ..utils import TokenUsage
+from ..usage import StreamTimings, Timings, TokenUsage
 
 
 class TCallModelSettings(BaseModel):
@@ -26,11 +23,15 @@ class TCallModelSettings(BaseModel):
     tool_choice: Literal["auto", "required"] = "auto"  # defaults to auto
 
 
+class ToolCallFunction(TypedDict):
+    name: str
+    arguments: str
+
+
 class ToolCallChunk(TypedDict):
-    index: int
-    id: str  
-    name: str  
-    arguments: str  
+    id: str
+    name: str
+    arguments: str
 
 
 class ChatChunk(TypedDict, total=False):
