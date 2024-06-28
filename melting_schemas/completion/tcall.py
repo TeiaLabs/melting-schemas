@@ -28,9 +28,9 @@ class TCallModelSettings(BaseModel):
 
 class ToolCallChunk(TypedDict):
     index: int
-    id: str  
-    name: str  
-    arguments: str  
+    id: str
+    name: str
+    arguments: str
 
 
 class ChatChunk(TypedDict, total=False):
@@ -99,10 +99,19 @@ class ToolSpec(BaseModel):
     json_schema: ToolJsonSchema
 
 
+class StaticToolRequest(BaseModel):
+    name: str
+    arguments: Optional[dict[str, Any]] = None
+    response: dict | list | str | None = None
+
+
 class TCallRequest(BaseModel):
-    tools: list[ToolSpec] | list[ToolJsonSchema] | list[str]
     messages: list[ChatMLMessage | ToolCallMLMessage | ToolMLMessage]
     settings: TCallModelSettings
+    static_tools: list[StaticToolRequest] = Field(default_factory=list)
+    tools: list[ToolSpec] | list[ToolJsonSchema] | list[str] = Field(
+        default_factory=list
+    )
 
     class Config:
         smart_unions = True
@@ -113,24 +122,24 @@ class TCallRequest(BaseModel):
                         {
                             "type": "function",
                             "function": {
-                                "name": "my_function",
-                                "description": "This is my function",
+                                "name": "get_weather",
+                                "description": "Get the current weather in a given city.",
                                 "parameters": {
                                     "type": "object",
                                     "properties": {
-                                        "my_param": {
+                                        "location": {
                                             "type": "string",
-                                            "description": "This is my parameter",
+                                            "description": "The city and state, e.g. San Francisco, CA",
                                         }
                                     },
-                                    "required": ["my_param"],
+                                    "required": ["location"],
                                 },
                             },
                         }
                     ],
                     "messages": [
                         {
-                            "content": "Hello",
+                            "content": "What is the weather like in Boston?",
                             "role": "user",
                         }
                     ],
@@ -206,13 +215,37 @@ class TCallRequest(BaseModel):
                     },
                 }
             },
+            "Native Tool Calling after selection": {
+                "tools": ["get_weather"],
+                "messages": [
+                    {"content": "What is the weather like in Boston?", "role": "user"},
+                    {
+                        "content": None,
+                        "role": "assistant",
+                        "tool_calls": [
+                            {
+                                "function": {
+                                    "args": '{"location": "Boston, MA"}',
+                                    "name": "get_weather",
+                                },
+                                "id": 0,
+                                "type": "function",
+                            }
+                        ],
+                    },
+                ],
+                "settings": {
+                    "model": "openai/gpt-4o-2024-05-13",
+                },
+            },
         }
 
 
 class TCallProcessedRequest(BaseModel):
-    tools: list[ToolSpec] | list[ToolJsonSchema]
     messages: list[ChatMLMessage | ToolCallMLMessage | ToolMLMessage]
     settings: TCallModelSettings
+    static_tools: list[StaticToolRequest]
+    tools: list[ToolSpec] | list[ToolJsonSchema]
 
 
 class TCallCompletionCreationResponse(BaseModel):
