@@ -1,5 +1,6 @@
 from prompts.turbo import PromptRole, TemplateInputs
 
+from ..completion.chat import ChatModelSettings
 from .prompt import ChatPromptTemplate, Template
 
 
@@ -13,7 +14,7 @@ def chat_prompt_template_examples():
         initial_template_data=[
             TemplateInputs(role=PromptRole.SYSTEM, name="", inputs={"a": "a"}, template_name="name")
         ],
-        settings={"model": "gpt-3.5-turbo"},
+        settings=ChatModelSettings(model="gpt-3.5-turbo"),
     )
 
     timeaware_prompt_template = ChatPromptTemplate(
@@ -22,9 +23,7 @@ def chat_prompt_template_examples():
         name="teia.example.1",
         system_templates="Current timestamp: <now>\nYou are a helpful chatbot.",
         user_templates="<text>",
-        settings={
-            "model": "gpt-3.5-turbo",
-        },
+        settings=ChatModelSettings(model="gpt-3.5-turbo"),
     )
 
     many_template = ChatPromptTemplate(
@@ -39,11 +38,11 @@ def chat_prompt_template_examples():
         assistant_templates=[
             Template(template_name="assistant_prompt", template="<message>"),
         ],
-        settings={
-            "model": "gpt-3.5-turbo",
-            "max_tokens": 200,
-            "temperature": 0.25,
-        },
+        settings=ChatModelSettings(
+            model="gpt-3.5-turbo",
+            max_tokens=200,
+            temperature=0.25,
+        ),
     )
 
     return [minimal_prompt_template, timeaware_prompt_template, many_template]

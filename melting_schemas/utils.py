@@ -1,4 +1,4 @@
-from typing import Protocol, TypeVar
+from typing import Protocol
 
 from fastapi.openapi.models import Example
 from pydantic import BaseModel
