@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Literal, Optional
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -14,7 +14,7 @@ class TextCompletionCreationResponse(BaseModel):
     finish_reason: Literal["stop", "length"]
     id: str = Field(..., alias="_id")
     text: str
-    suffix: Optional[str]
+    suffix: str | None = None
     output: str
     settings: TextModelSettings
     timings: Timings
@@ -24,4 +24,4 @@ class TextCompletionCreationResponse(BaseModel):
 class RawTextCompletionRequest(BaseModel):
     text: str
     settings: TextModelSettings
-    suffix: Optional[str] = None
+    suffix: str | None = None

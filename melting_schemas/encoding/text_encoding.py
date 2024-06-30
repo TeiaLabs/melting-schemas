@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -12,7 +11,7 @@ class TextEncodingResponse(BaseModel):
     created_at: datetime
     created_by: Creator
     model: str
-    usage: Optional[TokenUsage] = None
+    usage: TokenUsage | None = None
     vectors: list[list[float]]
 
 
