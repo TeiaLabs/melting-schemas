@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 
 class TemplateInputs(BaseModel):
     inputs: dict[str, str]
-    name: Annotated[str, Field(regex=r"^[a-zA-Z0-9_]*$", max_length=64)] | None = None
+    name: Annotated[str, Field(pattern=r"^[a-zA-Z0-9_]*$", max_length=64)] | None = None
     role: Literal["user", "system", "assistant"]
     template_name: str | None = None  # Advanced usage: select sub-templates
 

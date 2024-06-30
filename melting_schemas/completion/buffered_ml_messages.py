@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 
 class ChatMLMessage(BaseModel):
     content: str
-    name: Annotated[str, Field(regex=r"^[a-zA-Z0-9_]*$", max_length=64)] | None = None
+    name: Annotated[str, Field(pattern=r"^[a-zA-Z0-9_]*$", max_length=64)] | None = None
     role: Literal["user", "assistant", "system"]
 
 
@@ -34,7 +34,7 @@ class ToolMLMessage(BaseModel):
 
 
 class FunctionCall(BaseModel):
-    name: Annotated[str, Field(regex=r"^[a-zA-Z0-9_]*$", max_length=64)]
+    name: Annotated[str, Field(pattern=r"^[a-zA-Z0-9_]*$", max_length=64)]
     arguments: str
 
 
@@ -46,7 +46,7 @@ class FunctionCallMLMessage(BaseModel):
 
 class FunctionMLMessage(BaseModel):
     content: str
-    name: Annotated[str, Field(regex=r"^[a-zA-Z0-9_]*$", max_length=64)] | None = None
+    name: Annotated[str, Field(pattern=r"^[a-zA-Z0-9_]*$", max_length=64)] | None = None
     role: Literal["function"] = "function"
 
 
