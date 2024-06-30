@@ -1,4 +1,12 @@
-from typing import Literal, Required, TypedDict
+from typing import NotRequired, TypedDict
+
+from .completion.finish_reason import FinishReason
+
+
+class TokenUsage(TypedDict):
+    prompt_tokens: int
+    total_tokens: int
+    completion_tokens: NotRequired[int]
 
 
 class Timings(TypedDict):
@@ -13,15 +21,7 @@ class StreamTimings(TypedDict):
     total: float
 
 
-class TokenUsage(TypedDict, total=False):
-    prompt_tokens: Required[int]
-    total_tokens: Required[int]
-    completion_tokens: int
-
-
-class UsageInfo(TypedDict):
-    finish_reason: Literal[
-        "stop", "length", "tool_calls", "content_filter", "function_call"
-    ]
+class StreamUsageInfo(TypedDict):
+    finish_reason: NotRequired[FinishReason]
     token_usage: TokenUsage
     timings: StreamTimings

@@ -65,8 +65,8 @@ def to_openapi_examples(examples: list[NamedDumpable | OpenAPIExample]) -> dict[
     openapi_examples = {}
     for example in examples:
         if isinstance(example, OpenAPIExample):
-            openapi_examples[example.name] = Example(**example.value.model_dump(by_alias=True))
+            value = example.value.model_dump(by_alias=True, exclude_unset=True)
         else:
-            openapi_examples[example.name] = Example(**example.model_dump(by_alias=True))
-
+            value = example.model_dump(by_alias=True, exclude_unset=True)
+        openapi_examples[example.name] = Example(**value)
     return openapi_examples
