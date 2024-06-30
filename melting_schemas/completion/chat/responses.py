@@ -1,12 +1,13 @@
 from datetime import datetime
-from typing import Literal, Optional
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
 from melting_schemas.meta import Creator
 from melting_schemas.usage import StreamTimings, Timings, TokenUsage
 
-from ..utils import ChatMLMessage, Templating
+from ..buffered_ml_messages import ChatMLMessage
+from ..templating import Templating
 from .settings import ChatModelSettings
 
 
@@ -18,7 +19,7 @@ class ChatCompletionCreationResponse(BaseModel):
     messages: list[ChatMLMessage]
     output: ChatMLMessage
     settings: ChatModelSettings
-    templating: Optional[Templating]
+    templating: Templating | None = None
     timings: Timings | StreamTimings
     usage: TokenUsage
 

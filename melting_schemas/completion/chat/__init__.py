@@ -1,4 +1,5 @@
-from ..utils import ChatMLMessage, TemplateInputs, Templating
+from ..buffered_ml_messages import ChatMLMessage
+from ..templating import TemplateInputs, Templating
 from .requests import (
     ChatCompletionRequest,
     HybridChatCompletionRequest,

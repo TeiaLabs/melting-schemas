@@ -2,7 +2,8 @@ from datetime import datetime
 
 from melting_schemas.utils import wrap
 
-from ..utils import ChatMLMessage, TemplateInputs
+from ..buffered_ml_messages import ChatMLMessage
+from ..templating import TemplateInputs
 from .requests import (
     ChatCompletionRequest,
     HybridChatCompletionRequest,

@@ -5,5 +5,5 @@ class ChatModelSettings(BaseModelSettings):
     """
     Change these settings to tweak the model's behavior.
 
-    Heavily inspired by https://platform.openai.com/docs/api-reference/chat/create
+    Based on https://platform.openai.com/docs/api-reference/chat/create
     """
