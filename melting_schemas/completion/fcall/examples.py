@@ -1,9 +1,13 @@
 from melting_schemas.json_schema import FunctionJsonSchema, ObjectSchema, StringSchema
 from melting_schemas.utils import wrap
 
+from ..buffered_ml_messages import (
+    FunctionCall,
+    FunctionCallMLMessage,
+    FunctionMLMessage,
+)
 from .requests import ChatMLMessage, RawFCallRequest
 from .settings import FCallModelSettings
-from .utils import FunctionCall, FunctionCallMLMessage, FunctionMLMessage
 
 
 def raw_fcall_request_examples():

@@ -2,9 +2,12 @@ from pydantic import BaseModel
 
 from melting_schemas.json_schema import FunctionJsonSchema
 
-from ..utils import ChatMLMessage
+from ..buffered_ml_messages import (
+    ChatMLMessage,
+    FunctionCallMLMessage,
+    FunctionMLMessage,
+)
 from .settings import FCallModelSettings
-from .utils import FunctionCallMLMessage, FunctionMLMessage
 
 
 class RawFCallRequest(BaseModel):
