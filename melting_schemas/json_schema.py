@@ -116,9 +116,9 @@ Schemas = ArraySchema | ObjectSchema | PrimitiveSchemas
 class FunctionJsonSchema(BaseModel):
     name: str
     description: str = ""
-    parameters: ObjectSchema
+    parameters: ObjectSchema | None = None
 
 
-BaseSchema.update_forward_refs()
-ArraySchema.update_forward_refs()
-ObjectSchema.update_forward_refs()
+BaseSchema.model_rebuild()
+ArraySchema.model_rebuild()
+ObjectSchema.model_rebuild()
