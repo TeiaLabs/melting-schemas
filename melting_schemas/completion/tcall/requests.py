@@ -1,24 +1,30 @@
-import datetime
-from datetime import datetime
-from typing import Any, Literal, NotRequired, Optional, TypedDict
+from pydantic import BaseModel
 
-from pydantic import BaseModel, Field
-
-from ..completion.chat import ChatMLMessage, ChatModelSettings, Templating
-from ..json_schema import FunctionJsonSchema
-from ..meta import Creator
-from ..usage import StreamTimings, Timings, TokenUsage
+from ..buffered_ml_messages import BufferedMLMessageType
+from ..templating import TemplateInputs
+from .settings import TCallModelSettings
+from .specs import ToolJsonSchema, ToolSpec
 
 
-class TCallRequest(BaseModel):
+class RawTCallRequest(BaseModel):
     tools: list[ToolSpec] | list[ToolJsonSchema] | list[str]
-    messages: list[ChatMLMessage | ToolCallMLMessage | ToolMLMessage]
+    messages: list[BufferedMLMessageType]
+
     settings: TCallModelSettings
 
-    
+
+class PromptedTCallRequest(BaseModel):
+    tools: list[ToolSpec] | list[ToolJsonSchema] | list[str]
+    prompt_inputs: list[TemplateInputs]
+    prompt_name: str
+    settings: TCallModelSettings | None = None
 
 
-class TCallProcessedRequest(BaseModel):
-    tools: list[ToolSpec] | list[ToolJsonSchema]
-    messages: list[ChatMLMessage | ToolCallMLMessage | ToolMLMessage]
-    settings: TCallModelSettings
+class HybridTCallRequest(BaseModel):
+    tools: list[ToolSpec] | list[ToolJsonSchema] | list[str]
+    messages: list[BufferedMLMessageType]
+
+    prompt_inputs: list[TemplateInputs]
+    prompt_name: str
+
+    settings: TCallModelSettings | None = None

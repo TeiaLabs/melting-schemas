@@ -1,104 +1,234 @@
+from melting_schemas.json_schema import FunctionJsonSchema, ObjectSchema, StringSchema
+from melting_schemas.utils import wrap
+
+from ..buffered_ml_messages import ChatMLMessage
+from ..templating import TemplateInputs
+from .requests import PromptedTCallRequest, RawTCallRequest
+from .settings import TCallModelSettings
+from .special import SpecialTCallRequest, StaticTool
+from .specs import DynamicParams, HttpToolCallee, StaticParams, ToolJsonSchema, ToolSpec
+
+
 def raw_tcall_request_examples():
-    class Config:
-        smart_unions = True
-        examples = {
-            "Raw Tool Selection": {
-                "value": {
-                    "tools": [
-                        {
-                            "type": "function",
-                            "function": {
-                                "name": "my_function",
-                                "description": "This is my function",
-                                "parameters": {
-                                    "type": "object",
-                                    "properties": {
-                                        "my_param": {
-                                            "type": "string",
-                                            "description": "This is my parameter",
-                                        }
-                                    },
-                                    "required": ["my_param"],
-                                },
+    json_schema_tcall = RawTCallRequest(
+        tools=[
+            ToolJsonSchema(
+                type="function",
+                function=FunctionJsonSchema(
+                    name="weather",
+                    description="Retrieve weather information based on a city's name.",
+                    parameters=ObjectSchema(
+                        type="object",
+                        properties={
+                            "city_name": StringSchema(
+                                type="string",
+                                description="Name of the city.",
+                            )
+                        },
+                        required=["city_name"],
+                    ),
+                ),
+            )
+        ],
+        messages=[ChatMLMessage(content="How is the weather in Paris?", role="user")],
+        settings=TCallModelSettings(model="gpt-4o"),
+    )
+
+    tool_spec_tcall = RawTCallRequest(
+        tools=[
+            ToolSpec(
+                tool_name="weather_tool",
+                callee=HttpToolCallee(
+                    method="GET",
+                    forward_headers=["authorization"],
+                    url="https://plugins.beta.allai.digital/weather-plugin/weather_current",
+                    static=StaticParams(query={"kwargs": ""}),
+                    dynamic=DynamicParams(query=["place"]),
+                    argument_map={"city_name": "place"},
+                ),
+                json_schema=ToolJsonSchema(
+                    type="function",
+                    function=FunctionJsonSchema(
+                        name="weather",
+                        description="Retrieve weather information based on a city's name.",
+                        parameters=ObjectSchema(
+                            type="object",
+                            properties={
+                                "city_name": StringSchema(
+                                    type="string",
+                                    description="Name of the city.",
+                                )
                             },
-                        }
-                    ],
-                    "messages": [
-                        {
-                            "content": "Hello",
-                            "role": "user",
-                        }
-                    ],
-                    "settings": {
-                        "model": "gpt-4o",
-                        "tool_choice": "auto",
-                    },
-                }
-            },
-            "Raw Tool Calling": {
-                "value": {
-                    "tools": [
-                        {
-                            "type": "http",
-                            "name": "my_function",
-                            "callee": {
-                                "method": "GET",
-                                "forward_headers": ["x-user-email"],
-                                "headers": {"authorization": "my-special-api-token"},
-                                "url": "https://datasources.allai.digital/{name}/search",
-                                "static": {
-                                    "query": {"limit": 2},
-                                    "body": {"top_k": 10},
-                                },
-                                "dynamic": {
-                                    "path": ["name"],
-                                    "body": ["top_k", "search_query"],
-                                },
+                            required=["city_name"],
+                        ),
+                    ),
+                ),
+            )
+        ],
+        messages=[ChatMLMessage(content="How is the weather in Paris?", role="user")],
+        settings=TCallModelSettings(model="gpt-4o"),
+    )
+
+    native_tcall = RawTCallRequest(
+        tools=["weather_plugin"],
+        messages=[ChatMLMessage(content="How is the weather in Paris?", role="user")],
+        settings=TCallModelSettings(model="gpt-4o"),
+    )
+
+    return [
+        wrap(name="Raw Json Schema Request", value=json_schema_tcall),
+        wrap(name="Tool Calling Request", value=tool_spec_tcall),
+        wrap(name="Native Tool Calling Request", value=native_tcall),
+    ]
+
+
+def prompted_tcall_request_examples():
+    json_schema_tcall = PromptedTCallRequest(
+        tools=[
+            ToolJsonSchema(
+                type="function",
+                function=FunctionJsonSchema(
+                    name="weather",
+                    description="Retrieve weather information based on a city's name.",
+                    parameters=ObjectSchema(
+                        type="object",
+                        properties={
+                            "city_name": StringSchema(
+                                type="string",
+                                description="Name of the city.",
+                            )
+                        },
+                        required=["city_name"],
+                    ),
+                ),
+            )
+        ],
+        prompt_name="weather_prompt",
+        prompt_inputs=[TemplateInputs(inputs={"city_name": "Paris"}, role="user")],
+        settings=TCallModelSettings(model="gpt-4o"),
+    )
+
+    tool_spec_tcall = PromptedTCallRequest(
+        tools=[
+            ToolSpec(
+                tool_name="weather_tool",
+                callee=HttpToolCallee(
+                    method="GET",
+                    forward_headers=["authorization"],
+                    url="https://plugins.beta.allai.digital/weather-plugin/weather_current",
+                    static=StaticParams(query={"kwargs": ""}),
+                    dynamic=DynamicParams(query=["place"]),
+                    argument_map={"city_name": "place"},
+                ),
+                json_schema=ToolJsonSchema(
+                    type="function",
+                    function=FunctionJsonSchema(
+                        name="weather",
+                        description="Retrieve weather information based on a city's name.",
+                        parameters=ObjectSchema(
+                            type="object",
+                            properties={
+                                "city_name": StringSchema(
+                                    type="string",
+                                    description="Name of the city.",
+                                )
                             },
-                            "json_schema": {
-                                "type": "function",
-                                "function": {
-                                    "name": "my_function",
-                                    "description": "This is my function",
-                                    "parameters": {
-                                        "type": "object",
-                                        "properties": {
-                                            "my_param": {
-                                                "type": "string",
-                                                "description": "This is my parameter",
-                                            }
-                                        },
-                                        "required": ["my_param"],
-                                    },
-                                },
+                            required=["city_name"],
+                        ),
+                    ),
+                ),
+            )
+        ],
+        prompt_name="weather_prompt",
+        prompt_inputs=[TemplateInputs(inputs={"city_name": "Paris"}, role="user")],
+        settings=TCallModelSettings(model="gpt-4o"),
+    )
+
+    native_tcall = PromptedTCallRequest(
+        tools=["weather_plugin"],
+        prompt_name="weather_prompt",
+        prompt_inputs=[TemplateInputs(inputs={"city_name": "Paris"}, role="user")],
+        settings=TCallModelSettings(model="gpt-4o"),
+    )
+
+    return [
+        wrap(name="Raw Prompted Json Schema Request", value=json_schema_tcall),
+        wrap(name="Tool Calling Prompted Request", value=tool_spec_tcall),
+        wrap(name="Native Tool Calling Prompted Request", value=native_tcall),
+    ]
+
+
+def special_tcall_request_examples():
+    json_schema_tcall = SpecialTCallRequest(
+        tools=[
+            ToolJsonSchema(
+                type="function",
+                function=FunctionJsonSchema(
+                    name="weather",
+                    description="Retrieve weather information based on a city's name.",
+                    parameters=ObjectSchema(
+                        type="object",
+                        properties={
+                            "city_name": StringSchema(
+                                type="string",
+                                description="Name of the city.",
+                            )
+                        },
+                        required=["city_name"],
+                    ),
+                ),
+            )
+        ],
+        static_tools=[StaticTool(name="locator", response="User lives in Paris")],
+        messages=[ChatMLMessage(content="How is the weather where I live?", role="user")],
+        settings=TCallModelSettings(model="gpt-4o"),
+    )
+
+    tool_spec_tcall = SpecialTCallRequest(
+        tools=[
+            ToolSpec(
+                tool_name="weather_tool",
+                callee=HttpToolCallee(
+                    method="GET",
+                    forward_headers=["authorization"],
+                    url="https://plugins.beta.allai.digital/weather-plugin/weather_current",
+                    static=StaticParams(query={"kwargs": ""}),
+                    dynamic=DynamicParams(query=["place"]),
+                    argument_map={"city_name": "place"},
+                ),
+                json_schema=ToolJsonSchema(
+                    type="function",
+                    function=FunctionJsonSchema(
+                        name="weather",
+                        description="Retrieve weather information based on a city's name.",
+                        parameters=ObjectSchema(
+                            type="object",
+                            properties={
+                                "city_name": StringSchema(
+                                    type="string",
+                                    description="Name of the city.",
+                                )
                             },
-                        }
-                    ],
-                    "messages": [
-                        {
-                            "content": "Hello",
-                            "role": "user",
-                        }
-                    ],
-                    "settings": {
-                        "model": "gpt-4o",
-                        "tool_choice": "auto",
-                    },
-                }
-            },
-            "Native Tool Calling": {
-                "value": {
-                    "tools": ["example-tool-name"],
-                    "messages": [
-                        {
-                            "content": "Hello",
-                            "role": "user",
-                        }
-                    ],
-                    "settings": {
-                        "model": "gpt-4o",
-                        "tool_choice": "auto",
-                    },
-                }
-            },
-        }
+                            required=["city_name"],
+                        ),
+                    ),
+                ),
+            )
+        ],
+        static_tools=[StaticTool(name="locator", response="User lives in Paris")],
+        messages=[ChatMLMessage(content="How is the weather where I live?", role="user")],
+        settings=TCallModelSettings(model="gpt-4o"),
+    )
+
+    native_tcall = SpecialTCallRequest(
+        tools=["weather_tool"],
+        static_tools=[StaticTool(name="locator", response="User lives in Paris")],
+        messages=[ChatMLMessage(content="How is the weather where I live?", role="user")],
+        settings=TCallModelSettings(model="gpt-4o"),
+    )
+
+    return [
+        wrap(name="Raw Special Json Schema Request", value=json_schema_tcall),
+        wrap(name="Tool Calling Special Request", value=tool_spec_tcall),
+        wrap(name="Native Tool Calling Special Request", value=native_tcall),
+    ]

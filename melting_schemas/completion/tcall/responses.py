@@ -1,26 +1,44 @@
 import datetime
 from datetime import datetime
-from typing import Any, Literal, NotRequired, Optional, TypedDict
+from typing import Any
 
 from pydantic import BaseModel, Field
 
-from ..completion.chat import ChatMLMessage, ChatModelSettings, Templating
-from ..json_schema import FunctionJsonSchema
-from ..meta import Creator
-from ..usage import StreamTimings, Timings, TokenUsage
+from melting_schemas.meta import Creator
+from melting_schemas.usage import StreamTimings, Timings, TokenUsage
 
-class TCallCompletionCreationResponse(BaseModel):
-    created_at: datetime
-    created_by: Creator
-    finish_reason: Literal["stop", "length", "function_call", "tool_calls"]
-    id: str = Field(..., alias="_id")
-    messages: list[ChatMLMessage | ToolCallMLMessage | ToolMLMessage]
-    tool_calls: list[ToolCall]
-    output: ChatMLMessage | ToolMLMessage | ToolCallMLMessage
-    settings: ChatModelSettings
-    templating: Optional[Templating]
+from ..buffered_ml_messages import (
+    BufferedMLMessageType,
+    ChatMLMessage,
+    ToolCallMLMessage,
+)
+from ..finish_reason import FinishReason
+from ..templating import Templating
+from .settings import TCallModelSettings
+from .specs import FunctionJsonSchema, ToolSpec
+
+
+class ToolInfo(BaseModel):
+    spec: ToolSpec | FunctionJsonSchema  # Snapshot of the tool spec or JsonSchema
+    selected: bool  # If it was selected or not
+    ml_message_id: Any = None  # identifier of the message that triggered it
+
+
+class TCallResponse(BaseModel):
+    id: Any = Field(alias="_id")
+
+    # Execution
+    finish_reason: FinishReason
+    start_messages: list[BufferedMLMessageType]  # Messages passed by user or built from prompt
+    generated_messages: list[BufferedMLMessageType]  # Messages generated from the execution
+    tools: list[ToolInfo]
+    output: ChatMLMessage | ToolCallMLMessage  # Last message generated
+    templating: Templating | None = None
+
+    settings: TCallModelSettings
     timings: Timings | StreamTimings
     usage: TokenUsage
 
-    class Config:
-        smart_unions = True
+    # Metadata
+    created_at: datetime
+    created_by: Creator
