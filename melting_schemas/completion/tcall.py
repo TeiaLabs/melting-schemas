@@ -28,9 +28,9 @@ class TCallModelSettings(BaseModel):
 
 class ToolCallChunk(TypedDict):
     index: int
-    id: str  
-    name: str  
-    arguments: str  
+    id: str
+    name: str
+    arguments: str
 
 
 class ChatChunk(TypedDict, total=False):
@@ -38,7 +38,7 @@ class ChatChunk(TypedDict, total=False):
 
 
 class ToolCall(TypedDict):
-    index: int
+    index: NotRequired[int]
     id: str
     name: str
     arguments: str
@@ -99,38 +99,47 @@ class ToolSpec(BaseModel):
     json_schema: ToolJsonSchema
 
 
+class StaticToolRequest(BaseModel):
+    name: str
+    arguments: Optional[dict[str, Any]] = None
+    response: dict | list | str
+
+
 class TCallRequest(BaseModel):
-    tools: list[ToolSpec] | list[ToolJsonSchema] | list[str]
     messages: list[ChatMLMessage | ToolCallMLMessage | ToolMLMessage]
     settings: TCallModelSettings
+    static_tools: list[StaticToolRequest] = Field(default_factory=list)
+    tools: list[ToolSpec] | list[ToolJsonSchema] | list[str] = Field(
+        default_factory=list
+    )
 
     class Config:
         smart_unions = True
         examples = {
-            "Raw Tool Selection": {
+            "Raw JSON schema": {
                 "value": {
                     "tools": [
                         {
                             "type": "function",
                             "function": {
-                                "name": "my_function",
-                                "description": "This is my function",
+                                "name": "get_weather",
+                                "description": "Get the current weather in a given city.",
                                 "parameters": {
                                     "type": "object",
                                     "properties": {
-                                        "my_param": {
+                                        "location": {
                                             "type": "string",
-                                            "description": "This is my parameter",
+                                            "description": "The city and state, e.g. San Francisco, CA",
                                         }
                                     },
-                                    "required": ["my_param"],
+                                    "required": ["location"],
                                 },
                             },
                         }
                     ],
                     "messages": [
                         {
-                            "content": "Hello",
+                            "content": "What is the weather like in Boston?",
                             "role": "user",
                         }
                     ],
@@ -140,7 +149,47 @@ class TCallRequest(BaseModel):
                     },
                 }
             },
-            "Raw Tool Calling": {
+            "Raw JSON schema + static plugin request": {
+                "value": {
+                    "tools": [
+                        {
+                            "type": "function",
+                            "function": {
+                                "name": "get_weather",
+                                "description": "Get the current weather in a given city.",
+                                "parameters": {
+                                    "type": "object",
+                                    "properties": {
+                                        "location": {
+                                            "type": "string",
+                                            "description": "The city and state, e.g. San Francisco, CA",
+                                        }
+                                    },
+                                    "required": ["location"],
+                                },
+                            },
+                        }
+                    ],
+                    "static_tools": [
+                        {
+                            "name": "get_weather",
+                            "arguments": {"location": "Boston"},
+                            "response": {"temperature": 70, "weather": "sunny"},
+                        }
+                    ],
+                    "messages": [
+                        {
+                            "content": "What is the weather like? @get_weather:Boston",
+                            "role": "user",
+                        }
+                    ],
+                    "settings": {
+                        "model": "gpt-4o",
+                        "tool_choice": "auto",
+                    },
+                }
+            },
+            "Volatile plugin": {
                 "value": {
                     "tools": [
                         {
@@ -191,7 +240,7 @@ class TCallRequest(BaseModel):
                     },
                 }
             },
-            "Native Tool Calling": {
+            "Persisted plugin": {
                 "value": {
                     "tools": ["example-tool-name"],
                     "messages": [
@@ -206,13 +255,37 @@ class TCallRequest(BaseModel):
                     },
                 }
             },
+            "Persisted plugin (after selection)": {
+                "tools": ["get_weather"],
+                "messages": [
+                    {"content": "What is the weather like in Boston?", "role": "user"},
+                    {
+                        "content": None,
+                        "role": "assistant",
+                        "tool_calls": [
+                            {
+                                "function": {
+                                    "args": '{"location": "Boston, MA"}',
+                                    "name": "get_weather",
+                                },
+                                "id": 0,
+                                "type": "function",
+                            }
+                        ],
+                    },
+                ],
+                "settings": {
+                    "model": "openai/gpt-4o-2024-05-13",
+                },
+            },
         }
 
 
 class TCallProcessedRequest(BaseModel):
-    tools: list[ToolSpec] | list[ToolJsonSchema]
     messages: list[ChatMLMessage | ToolCallMLMessage | ToolMLMessage]
     settings: TCallModelSettings
+    static_tools: list[StaticToolRequest]
+    tools: list[ToolSpec] | list[ToolJsonSchema]
 
 
 class TCallCompletionCreationResponse(BaseModel):
