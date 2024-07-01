@@ -102,7 +102,7 @@ class ToolSpec(BaseModel):
 class StaticToolRequest(BaseModel):
     name: str
     arguments: Optional[dict[str, Any]] = None
-    response: dict | list | str
+    response: dict | list | str | None = None
 
 
 class TCallRequest(BaseModel):
