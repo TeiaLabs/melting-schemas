@@ -34,6 +34,7 @@ class ToolCallChunk(TypedDict):
 
 
 class ChatChunk(TypedDict, total=False):
+    id: str
     delta: str
 
 
