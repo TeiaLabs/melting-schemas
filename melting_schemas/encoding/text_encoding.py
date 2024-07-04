@@ -19,6 +19,7 @@ class TextEncodingResponse(BaseModel):
 class RawTextEncoding(BaseModel):
     snippets: list[str]
     model: str
+    dims: int | None = None
 
     class Config:
         examples = {
