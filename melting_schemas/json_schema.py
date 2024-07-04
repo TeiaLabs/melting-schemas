@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
@@ -9,14 +9,15 @@ class NativeToolParam(BaseModel):
 
 class ArrayToolParam(BaseModel):
     type: Literal["array"] = "array"
-    items: "NativeToolParam | ArrayToolParam | ObjectToolParam"
+    items: list[Any]
 
 
 class ObjectToolParam(BaseModel):
     type: Literal["object"] = "object"
-    properties: dict[str, "NativeToolParam | ArrayToolParam | ObjectToolParam"] = Field(
+    properties: dict[str, Any] = Field(
         default_factory=dict
     )
+    required: list[str] = Field(default_factory=list)
 
 
 class FunctionJsonSchema(BaseModel):
