@@ -105,10 +105,16 @@ class StaticToolRequest(BaseModel):
     response: dict | list | str | None = None
 
 
+class StaticParamsOverrides(BaseModel):
+    name: str
+    params: StaticParams
+
+
 class TCallRequest(BaseModel):
     messages: list[ChatMLMessage | ToolCallMLMessage | ToolMLMessage]
     settings: TCallModelSettings
     static_tools: list[StaticToolRequest] = Field(default_factory=list)
+    static_params_overrides: list[StaticParamsOverrides] = Field(default_factory=list)
     tools: list[ToolSpec] | list[ToolJsonSchema] | list[str] = Field(
         default_factory=list
     )
@@ -238,6 +244,62 @@ class TCallRequest(BaseModel):
                         "model": "gpt-4o",
                         "tool_choice": "auto",
                     },
+                }
+            },
+            "Volatile plugin with overriden static params": {
+                "value": {
+                    "tools": [
+                        {
+                            "type": "http",
+                            "name": "get_weather",
+                            "callee": {
+                                "method": "GET",
+                                "forward_headers": [],
+                                "headers": {"authorization": "my-special-api-token"},
+                                "url": "https://weather.com",
+                                "static": {},
+                                "dynamic": {
+                                    "body": ["location"],
+                                },
+                            },
+                            "json_schema": {
+                                "type": "function",
+                                "function": {
+                                    "name": "get_weather",
+                                    "description": "Get the current weather in a given city.",
+                                    "parameters": {
+                                        "type": "object",
+                                        "properties": {
+                                            "location": {
+                                                "type": "string",
+                                                "description": "The city and state, e.g. San Francisco, CA",
+                                            }
+                                        },
+                                        "required": ["location"],
+                                    },
+                                },
+                            },
+                        }
+                    ],
+                    "messages": [
+                        {
+                            "content": "Hello, how's Boston right now?",
+                            "role": "user",
+                        }
+                    ],
+                    "settings": {
+                        "model": "gpt-4o",
+                        "tool_choice": "auto",
+                        "max_iterations": 1,
+                    },
+                    "static_params_overrides": [
+                        {
+                            "name": "get_weather",
+                            "params": {
+                                "body": {"unit": "imperial"},
+                            },
+                        }
+                    ],
                 }
             },
             "Persisted plugin": {
