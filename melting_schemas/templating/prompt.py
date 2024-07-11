@@ -1,63 +1,25 @@
-from enum import Enum
+from typing import Any
 
-from prompts import DynamicSchema, PromptRole, Template, TurboSchema
+from prompts import (
+    DynamicSchema,
+    OpenAIModelSettings,
+    PromptRole,
+    Template,
+    TurboSchema,
+)
 from prompts.schemas import TurboSchema
 from pydantic import BaseModel, Field
 
-from melting_schemas.completion.chat import ChatModelSettings
-from melting_schemas.meta import Creator
+from melting_schemas.completion.buffered_ml_messages import ChatMLMessage
+from melting_schemas.completion.templating import TemplateInputs
+
+from ..completion.chat import ChatModelSettings
 
 # ====== Create Schemas ======
 
 
 class ChatPromptTemplate(TurboSchema):
     settings: ChatModelSettings
-
-    class Config:
-        examples = {
-            "Minimal Prompt Template": {
-                "value": {
-                    "assistant_templates": "<text>",
-                    "description": "Single of its kind, example app, teia org.",
-                    "name": "teia.example_app.single.example01",
-                    "system_templates": "<text>",
-                    "user_templates": "<text>",
-                    "settings": {"model": "gpt-3.5-turbo"},
-                }
-            },
-            "Time-aware Prompt Template": {
-                "value": {
-                    "assistant_templates": "<text>",
-                    "description": "Single of its kind, example app, teia org.",
-                    "name": "teia.example.1",
-                    "system_templates": "Current timestamp: <now>\nYou are a helpful chatbot.",
-                    "user_templates": "<text>",
-                    "settings": {
-                        "model": "gpt-3.5-turbo",
-                    },
-                }
-            },
-            "Many Templates": {
-                "value": {
-                    "name": "teia.example.2",
-                    "description": "A development example.",
-                    "settings": {
-                        "model": "gpt-3.5-turbo",
-                        "max_tokens": 200,
-                        "temperature": 0.25,
-                    },
-                    "system_templates": [
-                        {"template_name": "plugin_prompt", "template": "<plugin_data>"},
-                    ],
-                    "user_templates": [
-                        {"template_name": "user_prompt", "template": "<question>"}
-                    ],
-                    "assistant_templates": [
-                        {"template_name": "assistant_prompt", "template": "<message>"}
-                    ],
-                }
-            },
-        }
 
 
 class CreateCompletionPrompt(DynamicSchema):
@@ -69,7 +31,7 @@ class CreateCompletionPrompt(DynamicSchema):
 
 class GeneratedFields(BaseModel):
     created_at: str
-    created_by: Creator
+    created_by: Any
     id: str = Field(alias="_id")
 
 
@@ -101,9 +63,6 @@ class UpdateSettings(BaseModel):
 
 
 class BaseUpdatePrompt(BaseModel):
-    class Config:
-        json_encoders = {Enum: lambda e: e.value}
-
     # Prompt fields
     description: str | None = None
     settings: UpdateSettings | None = None
@@ -121,4 +80,37 @@ class UpdateChatPrompt(BaseUpdatePrompt):
 
 class UpdateCompletionPrompt(BaseUpdatePrompt):
     # Template
+    template: str | None = None
+
+
+# ========= Full Schema ==============
+
+
+class CompleteBasePromptTemplate(BaseModel):
+    name: str
+    description: str = ""
+    settings: ChatModelSettings
+    initial_template_data: list[ChatMLMessage | TemplateInputs] = Field(
+        default_factory=list
+    )
+
+
+class CompleteChatPromptTemplate(CompleteBasePromptTemplate):
+    settings: ChatModelSettings
+
+    # chat templates
+    assistant_templates: list[Template] | str
+    system_templates: list[Template] | str
+    user_templates: list[Template] | str
+
+
+class CompleteTextPromptTemplate(CompleteBasePromptTemplate):
+    settings: OpenAIModelSettings
+
+    # Chat Templates
+    assistant_templates: list[Template] | None = None
+    system_templates: list[Template] | None = None
+    user_templates: list[Template] | None = None
+
+    # Completion Template
     template: str | None = None
