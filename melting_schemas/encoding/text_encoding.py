@@ -14,3 +14,4 @@ class TextEncoding(BaseModel):
 class RawTextEncodingRequest(BaseModel):
     snippets: list[str]
     model: str
+    dims: int | None = None
