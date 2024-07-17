@@ -1,1 +1,1 @@
-# Melting Face API Schemas
+# MeltingFace API Schemas
