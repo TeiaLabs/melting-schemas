@@ -1,34 +1,17 @@
-from datetime import datetime
-from typing import Optional
+from pydantic import BaseModel
 
-from pydantic import BaseModel, Field
-
-from ..meta import Creator
-from ..utils import TokenUsage
+from ..usage import TokenUsage
 
 
-class TextEncodingResponse(BaseModel):
-    id: str = Field(..., alias="_id")
-    created_at: datetime
-    created_by: Creator
+class TextEncoding(BaseModel):
     model: str
-    usage: Optional[TokenUsage] = None
+    snippets: list[str]
     vectors: list[list[float]]
 
+    usage: TokenUsage | None = None
 
-class RawTextEncoding(BaseModel):
+
+class RawTextEncodingRequest(BaseModel):
     snippets: list[str]
     model: str
     dims: int | None = None
-
-    class Config:
-        examples = {
-            "Minimal": {
-                "value": {
-                    "model": "sentence-transformers/all-MiniLM-L6-v2",
-                    "snippets": [
-                        "I like to eat apples.",
-                    ],
-                },
-            },
-        }
