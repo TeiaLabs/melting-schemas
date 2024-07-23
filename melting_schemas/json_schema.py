@@ -1,6 +1,6 @@
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, SerializeAsAny
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class BaseSchema(BaseModel):
@@ -85,15 +85,13 @@ class ArraySchema(BaseSchema):
     """
 
     type: Literal["array"]
-    items: "Schemas" = Field(default_factory=list)
-    prefix_items: list[SerializeAsAny["Schemas"]] = Field(default_factory=list, alias="prefixItems")
-    additional_items: SerializeAsAny["Schemas"] = Field(
-        default_factory=list, alias="additionalItems"
-    )
+    items: "Schemas | None" = Field(default=None)
+    prefix_items: list["Schemas"] = Field(default_factory=list, alias="prefixItems")
+    additional_items: "Schemas | None" = Field(default=None, alias="additionalItems")
     max_items: int = Field(default=0, alias="maxItems")
     min_items: int = Field(default=0, alias="minItems")
     unique_items: bool = Field(default=False, alias="uniqueItems")
-    contains: SerializeAsAny["Schemas | None"] = Field(default=None)
+    contains: "Schemas | None" = Field(default=None)
     min_contains: int = Field(default=0, alias="minContains")
     max_contains: int = Field(default=0, alias="maxContains")
 
@@ -107,7 +105,7 @@ class ObjectSchema(BaseSchema):
     type: Literal["object"]
     max_properties: int = Field(default=0, alias="maxProperties")
     min_properties: int = Field(default=0, alias="minProperties")
-    properties: dict[str, SerializeAsAny["Schemas"]] = Field(default_factory=dict)
+    properties: dict[str, "Schemas"] = Field(default_factory=dict)
     required: list[str] = Field(default_factory=list)
 
 
