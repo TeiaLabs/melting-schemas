@@ -16,6 +16,7 @@ class GeneratedParams(BaseModel):
 
 class Forwardings(BaseModel):
     headers: list[str] = Field(default_factory=list)
+    path: list[str] = Field(default_factory=list)
     query: list[str] = Field(default_factory=list)
     body: list[str] = Field(default_factory=list)
 
