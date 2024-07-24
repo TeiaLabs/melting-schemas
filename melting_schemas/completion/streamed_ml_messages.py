@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 
 class ChatMLMessageChunk(BaseModel):
+    type: Literal["chat"]
     id: Any
     delta: str
 
@@ -14,13 +15,14 @@ class ToolCallFunctionChunk(BaseModel):
 
 
 class ToolCallChunk(BaseModel):
-    id: str
-    tool_id: str
     type: Literal["function"]
+    id: Any
+    tool_id: str
     function: ToolCallFunctionChunk
 
 
 class ToolMLMessageChunk(BaseModel):
+    type: Literal["tool_response"]
     tool_id: str
     delta: str
     name: str
