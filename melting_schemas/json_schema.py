@@ -9,7 +9,7 @@ class BaseSchema(BaseModel):
     https://json-schema.org/understanding-json-schema/reference/generic
     """
 
-    enum: list["Schemas"] = Field(default_factory=list)
+    enum: list[str | None | int | float | bool] = Field(default_factory=list)
 
     # Docs
     comment: str = Field(default="", alias="$comment")
