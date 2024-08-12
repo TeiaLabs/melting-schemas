@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from ..buffered_ml_messages import ChatMLMessage
 from ..templating import TemplateInputs
@@ -19,4 +19,5 @@ class ChatCompletionRequest(BaseModel):
 class HybridChatCompletionRequest(BaseModel):
     prompt_name: str
     messages: list[ChatMLMessage | TemplateInputs]
+    prompt_inputs: list[TemplateInputs] = Field(default_factory=list)
     settings: ChatModelSettings | None = None
