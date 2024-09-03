@@ -10,7 +10,7 @@ class ChatTextContent(BaseModel):
 
 class ImageURL(BaseModel):
     url: str
-    detail: Literal["low", "high", "auto"]
+    detail: Literal["low"] = "low"
 
 
 class ChatImageContent(BaseModel):

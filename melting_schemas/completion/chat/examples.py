@@ -41,7 +41,7 @@ def raw_chat_completion_request_examples():
                     ChatImageContent(
                         image_url=ImageURL(
                             url="https://upload.wikimedia.org/wikipedia/commons/a/ab/Patates.jpg",
-                            detail="auto",
+                            detail="low",
                         ),
                     ),
                 ],
