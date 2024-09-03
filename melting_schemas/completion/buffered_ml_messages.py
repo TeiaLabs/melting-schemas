@@ -1,10 +1,25 @@
-from typing import Annotated, Any, Literal
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, Field
 
 
+class ChatTextContent(BaseModel):
+    type: Literal["text"] = "text"
+    text: str
+
+
+class ImageURL(BaseModel):
+    url: str
+    detail: Literal["low", "high", "auto"]
+
+
+class ChatImageContent(BaseModel):
+    type: Literal["image_url"] = "image_url"
+    image_url: ImageURL
+
+
 class ChatMLMessage(BaseModel):
-    content: str
+    content: str | list[ChatTextContent | ChatImageContent]
     name: Annotated[str, Field(pattern=r"^[a-zA-Z0-9_]*$", max_length=64)] | None = None
     role: Literal["user", "assistant", "system"]
 

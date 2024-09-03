@@ -2,7 +2,12 @@ from datetime import datetime
 
 from melting_schemas.utils import wrap
 
-from ..buffered_ml_messages import ChatMLMessage
+from ..buffered_ml_messages import (
+    ChatImageContent,
+    ChatMLMessage,
+    ChatTextContent,
+    ImageURL,
+)
 from ..templating import TemplateInputs
 from .requests import (
     ChatCompletionRequest,
@@ -27,8 +32,30 @@ def raw_chat_completion_request_examples():
         ],
         settings=ChatModelSettings(model="openai/gpt-4-0613"),
     )
+    multimodal_raw = RawChatCompletionRequest(
+        messages=[
+            ChatMLMessage(content="You are a helpful chatbot.", role="system"),
+            ChatMLMessage(
+                content=[
+                    ChatTextContent(text="What's Severo's favorite food? (tip: image)"),
+                    ChatImageContent(
+                        image_url=ImageURL(
+                            url="https://upload.wikimedia.org/wikipedia/commons/a/ab/Patates.jpg",
+                            detail="auto",
+                        ),
+                    ),
+                ],
+                role="user",
+            ),
+        ],
+        settings=ChatModelSettings(model="openai/gpt-4o"),
+    )
 
-    return [wrap(name="Raw", value=raw), wrap(name="Named Raw", value=named_raw)]
+    return [
+        wrap(name="Raw", value=raw),
+        wrap(name="Named Raw", value=named_raw),
+        wrap(name="Multimodal Raw", value=multimodal_raw),
+    ]
 
 
 def chat_completion_request_examples():
