@@ -119,6 +119,12 @@ class FunctionJsonSchema(BaseModel):
     parameters: ObjectSchema | None = None
 
 
+class FunctionJsonSchemaOverrides(BaseModel):
+    name: str | None = None
+    description: str | None = None
+    parameters: ObjectSchema | None = None
+
+
 BaseSchema.model_rebuild()
 ArraySchema.model_rebuild()
 ObjectSchema.model_rebuild()
