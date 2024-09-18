@@ -25,7 +25,7 @@ class BaseSchema(BaseModel):
     read_only: bool = Field(default=False, alias="readOnly")
     write_only: bool = Field(default=False, alias="writeOnly")
 
-    model_config = ConfigDict(populate_by_name=True, frozen=True)
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class StringSchema(BaseSchema):
