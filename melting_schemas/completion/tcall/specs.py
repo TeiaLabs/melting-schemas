@@ -1,4 +1,4 @@
-from typing import Any, Literal
+from typing import Any, Literal, Optional
 
 from pydantic import BaseModel, Field, SerializeAsAny
 
@@ -31,6 +31,12 @@ class ToolSpec(BaseModel):
     tool_name: str
     callee: HttpToolCallee | NoopToolCallee
     json_schema: ToolJsonSchema
+
+
+class UpdateToolSpec(BaseModel):
+    tool_name: Optional[str] = None
+    callee: Optional[HttpToolCallee | NoopToolCallee] = None
+    json_schema: Optional[ToolJsonSchema] = None
 
 
 class ToolInfo(BaseModel):
