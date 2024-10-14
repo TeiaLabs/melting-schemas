@@ -33,6 +33,12 @@ class ToolSpec(BaseModel):
     json_schema: ToolJsonSchema
 
 
+class UpdateToolSpec(BaseModel):
+    tool_name: str | None = None
+    callee: HttpToolCallee | NoopToolCallee | None = None
+    json_schema: ToolJsonSchema | None = None
+
+
 class ToolInfo(BaseModel):
     spec: SerializeAsAny[ToolSpec | FunctionJsonSchema]
     ml_message_id: Any = None
