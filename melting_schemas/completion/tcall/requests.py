@@ -13,7 +13,7 @@ class RawTCallRequest(BaseModel):
         default_factory=list
     )
     static_tools: list[StaticTool] = Field(default_factory=list)
-    tool_overridings: dict[str, FunctionJsonSchemaOverrides] = Field(
+    tool_overridings: dict[str, list[FunctionJsonSchemaOverrides]] = Field(
         default_factory=dict
     )
     messages: list[BufferedMLMessageType]
@@ -26,7 +26,7 @@ class PromptedTCallRequest(BaseModel):
         default_factory=list
     )
     static_tools: list[StaticTool] = Field(default_factory=list)
-    tool_overridings: dict[str, FunctionJsonSchemaOverrides] = Field(
+    tool_overridings: dict[str, list[FunctionJsonSchemaOverrides]] = Field(
         default_factory=dict
     )
     prompt_inputs: list[TemplateInputs]
@@ -39,7 +39,7 @@ class HybridTCallRequest(BaseModel):
         default_factory=list
     )
     static_tools: list[StaticTool] = Field(default_factory=list)
-    tool_overridings: dict[str, FunctionJsonSchemaOverrides] = Field(
+    tool_overridings: dict[str, list[FunctionJsonSchemaOverrides]] = Field(
         default_factory=dict
     )
 
