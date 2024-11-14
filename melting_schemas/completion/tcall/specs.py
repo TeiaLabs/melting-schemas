@@ -2,7 +2,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field, SerializeAsAny
 
-from melting_schemas.json_schema import FunctionJsonSchema
+from melting_schemas.json_schema import FunctionJsonSchema, FunctionJsonSchemaOverrides
 
 from .params import Forwardings, GeneratedParams, StaticParams
 
@@ -49,3 +49,12 @@ class CallableStaticTool(BaseModel):
     arguments: dict[str, Any]
     callee: HttpToolCallee | NoopToolCallee
     ml_message_id: Any = None
+
+
+class HttpToolCalleeOverrides(BaseModel):
+    static_params: StaticParams = Field(default_factory=StaticParams)
+
+
+class TollSpecOverride(BaseModel):
+    function_override: FunctionJsonSchemaOverrides | None = None
+    callee_override: HttpToolCalleeOverrides | None = None

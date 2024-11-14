@@ -1,11 +1,10 @@
 from pydantic import BaseModel, Field
 
-from ...json_schema import FunctionJsonSchemaOverrides
 from ..buffered_ml_messages import BufferedMLMessageType
 from ..templating import TemplateInputs
 from .params import StaticTool
 from .settings import TCallModelSettings
-from .specs import ToolJsonSchema, ToolSpec
+from .specs import TollSpecOverride, ToolJsonSchema, ToolSpec
 
 
 class RawTCallRequest(BaseModel):
@@ -13,9 +12,7 @@ class RawTCallRequest(BaseModel):
         default_factory=list
     )
     static_tools: list[StaticTool] = Field(default_factory=list)
-    tool_overridings: dict[str, list[FunctionJsonSchemaOverrides]] = Field(
-        default_factory=dict
-    )
+    tool_overridings: dict[str, list[TollSpecOverride]] = Field(default_factory=dict)
     messages: list[BufferedMLMessageType]
 
     settings: TCallModelSettings
@@ -26,9 +23,7 @@ class PromptedTCallRequest(BaseModel):
         default_factory=list
     )
     static_tools: list[StaticTool] = Field(default_factory=list)
-    tool_overridings: dict[str, list[FunctionJsonSchemaOverrides]] = Field(
-        default_factory=dict
-    )
+    tool_overridings: dict[str, list[TollSpecOverride]] = Field(default_factory=dict)
     prompt_inputs: list[TemplateInputs]
     prompt_name: str
     settings: TCallModelSettings | None = None
@@ -39,9 +34,7 @@ class HybridTCallRequest(BaseModel):
         default_factory=list
     )
     static_tools: list[StaticTool] = Field(default_factory=list)
-    tool_overridings: dict[str, list[FunctionJsonSchemaOverrides]] = Field(
-        default_factory=dict
-    )
+    tool_overridings: dict[str, list[TollSpecOverride]] = Field(default_factory=dict)
 
     messages: list[BufferedMLMessageType]
 
