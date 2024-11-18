@@ -55,6 +55,6 @@ class HttpToolCalleeOverrides(BaseModel):
     static_params: StaticParams = Field(default_factory=StaticParams)
 
 
-class TollSpecOverride(BaseModel):
+class ToolSpecOverride(BaseModel):
     function_override: FunctionJsonSchemaOverrides | None = None
     callee_override: HttpToolCalleeOverrides | None = None
