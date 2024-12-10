@@ -2,6 +2,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field, SerializeAsAny
 
+from melting_schemas.completion.buffered_ml_messages import ChatMLMessage
 from melting_schemas.json_schema import FunctionJsonSchema, FunctionJsonSchemaOverrides
 
 from .params import Forwardings, GeneratedParams, StaticParams
@@ -29,6 +30,7 @@ class ToolJsonSchema(BaseModel):
 
 class ToolSpec(BaseModel):
     tool_name: str
+    default_template: dict[str, ChatMLMessage] | None = None
     callee: HttpToolCallee | NoopToolCallee
     json_schema: ToolJsonSchema
 
