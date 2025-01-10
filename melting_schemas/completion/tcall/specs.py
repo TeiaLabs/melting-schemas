@@ -54,7 +54,13 @@ class CallableStaticTool(BaseModel):
 
 
 class HttpToolCalleeOverrides(BaseModel):
+    method: Literal["GET", "POST"] | None = None
+    headers: dict[str, str] = Field(default_factory=dict)
+    url: str | None = None
+    forwardings: Forwardings = Field(default_factory=Forwardings)
     static_params: StaticParams = Field(default_factory=StaticParams)
+    generated_params: GeneratedParams = Field(default_factory=GeneratedParams)
+    parameter_translator: dict[str, str] = Field(default_factory=dict)
 
 
 class ToolSpecOverride(BaseModel):
