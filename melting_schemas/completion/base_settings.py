@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, Field
 
@@ -12,3 +12,4 @@ class BaseModelSettings(BaseModel):
     stop: list[str] | None = Field(default=None, max_length=4)
     presence_penalty: float = Field(default=0, ge=-2, le=2)
     frequency_penalty: float = Field(default=0, ge=-2, le=2)
+    reasoning_effort: Literal["low", "medium", "high"] = "medium"
