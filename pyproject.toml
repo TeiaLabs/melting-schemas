@@ -24,7 +24,7 @@ description = "Teia MeltingFace API"
 readme = "README.md"
 requires-python = ">=3.12"
 dynamic = ["version"]
-dependencies = ["pydantic[email]==2.7.*"]
+dependencies = ["pydantic[email]>=2.7.0"]
 
 
 [project.optional-dependencies]
